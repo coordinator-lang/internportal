@@ -44,7 +44,8 @@ Nordicta Internal Website/
 │   └── forslag-viewer_v1.4.html ← länkar till form v1.4  ← AKTUELL
 │
 ├── Anvandbar_information/
-│   └── anvandbar-information_v1.1.html  ← referenssida i portal-stil (platshållare)  ← AKTUELL
+│   ├── anvandbar-information_v1.1.html  ← referenssida i portal-stil (platshållare)
+│   └── anvandbar-information_v1.2.html  ← + moms-sektion (Forenom + bostadsuthyrning per land)  ← AKTUELL
 │
 └── Hyresvardsformular/
     └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
@@ -132,6 +133,7 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | Version | Ändring | Typ |
 |---|---|---|
 | v1.1 | Referenssidans innehåll inlagt i portal-mallen (unified header/footer, portal-CSS). Alla tax/lag-värden är [PLATSHÅLLARE] tills en ägare fyller i från officiell källa. | – |
+| v1.2 | + Moms-sektion: Forenom-tabell (boende/tjänste-moms per land) + allmän tabell över moms på bostadsuthyrning för 12 länder (verifierat via webbsök juni 2026). Övriga fält fortf. platshållare. | Liten |
 
 ### Versionshistorik – index (startsidan)
 Index versioneras genom arkiverade kopior i roten (`index_v1.0.html`, `index_v1.1.html` etc.).

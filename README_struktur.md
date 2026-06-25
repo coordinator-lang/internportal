@@ -47,8 +47,11 @@ Nordicta Internal Website/
 │   ├── anvandbar-information_v1.1.html  ← referenssida i portal-stil (platshållare)
 │   └── anvandbar-information_v1.2.html  ← + moms-sektion (Forenom + bostadsuthyrning per land)  ← AKTUELL
 │
-└── Hyresvardsformular/
-    └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
+├── Hyresvardsformular/
+│   └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
+│
+└── Bostadskalkylator/
+    └── bostadskalkylator_v3.1.html      ← internt prisverktyg, hostad oförändrad (versionshanteras separat av användaren)
 ```
 
 > **OBS – Hyresvardsformular/ är MEDVETET INTE länkad** från index eller någon
@@ -134,6 +137,12 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 |---|---|---|
 | v1.1 | Referenssidans innehåll inlagt i portal-mallen (unified header/footer, portal-CSS). Alla tax/lag-värden är [PLATSHÅLLARE] tills en ägare fyller i från officiell källa. | – |
 | v1.2 | + Moms-sektion: Forenom-tabell (boende/tjänste-moms per land) + allmän tabell över moms på bostadsuthyrning för 12 länder (verifierat via webbsök juni 2026). Övriga fält fortf. platshållare. | Liten |
+
+### Bostadskalkylator
+Hostad **oförändrad** från användarens egen versionerade fil (v3.1). Versionshanteras
+separat (egen redirect-index i källmappen). Har portal-headern men saknar
+"Startsidan"-länk — loggan är inte heller en hemlänk. Kan läggas till som v3.2 vid behov
+(loggan → hemlänk är osynlig i PDF; en synlig back-knapp måste döljas i `@media print`).
 
 ### Versionshistorik – index (startsidan)
 Index versioneras genom arkiverade kopior i roten (`index_v1.0.html`, `index_v1.1.html` etc.).

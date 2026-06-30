@@ -51,7 +51,7 @@ Nordicta Internal Website/
 │   └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
 │
 └── Bostadskalkylator/
-    └── bostadskalkylator_v3.1.html      ← internt prisverktyg, hostad oförändrad (versionshanteras separat av användaren)
+    └── bostadskalkylator_v3.3.html      ← internt prisverktyg, hostad oförändrad (versionshanteras separat av användaren)
 ```
 
 > **OBS – Hyresvardsformular/ är MEDVETET INTE länkad** från index eller någon

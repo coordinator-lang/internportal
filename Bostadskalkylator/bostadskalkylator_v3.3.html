@@ -99,6 +99,15 @@
   .occ-m .sub{display:inline;margin-left:5px}
   .unit input.occ-in{width:58px}
   .occ-empty{font-size:12px;color:var(--faint);font-family:'IBM Plex Mono',monospace;line-height:1.5}
+  /* markering efter låst HV-period */
+  .occ-divider{font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:.5px;
+    text-transform:uppercase;color:var(--warn);border-top:2px dashed #f59e0b;margin:7px 0 3px;padding-top:5px}
+  .occ-row.occ-unlocked .occ-m{color:var(--warn)}
+  .occ-row.occ-unlocked{opacity:.85}
+  /* "varav garanterat"-rader i pris/%-korten */
+  .out.lockrow{background:#f0fdf4;margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:7px;border-bottom:0}
+  .out.lockrow span{color:#047857}
+  .out.lockrow b{color:#047857}
   /* ── KATEGORIRUBRIKER i kostnadstabellen ── */
   table.inv tr.cat td{background:#f8fafc;font-family:'IBM Plex Mono',monospace;font-weight:700;
     font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-strong);
@@ -314,9 +323,13 @@
     .occ-row{ gap:8px; }
     .occ-list{ gap:3px; }
     .big{ padding:9px 13px; margin:9px 0 5px; }
-    .hint{ margin:3px 0 7px; }
-    .rec-item{ padding:7px 0; }
-    .footer{ border-top:1px solid #cbd5e1; margin-top:14px; }
+    .hint{ margin:3px 0 6px; font-size:10.5px; }
+    .rec-item{ padding:6px 0; }
+    .tbt th, .tbt td{ padding:5px 6px; }
+    .verdict{ padding:9px 11px; }
+    .legend{ display:none; }   /* skärm-färgnyckel, irrelevant i PDF (inga blå fält där) */
+    .footer{ border-top:1px solid #cbd5e1; margin-top:10px; padding:10px 16px; }
+    .main .card, .main .grid{ margin-top:11px !important; }
     /* inmatningsfält → ren text (inga rutor) i PDF */
     input[type=text],input[type=number],input[type=date]{
       border:none !important; background:transparent !important; box-shadow:none !important;
@@ -413,6 +426,7 @@
         </div>
         <div class="row"><label>Från</label><input type="date" id="from"></div>
         <div class="row"><label>Till</label><input type="date" id="to"></div>
+        <div class="row"><label>Låst period mot HV <span class="sub">garanterade mån i avtalet</span></label><span class="unit"><input type="number" id="lockMonths" min="0" max="999" step="1"> mån</span></div>
       </div>
     </div>
 
@@ -424,7 +438,7 @@
           <span class="unit"><input type="number" id="market" step="5"><select id="marketCur" class="cur"><option value="SEK">SEK</option><option value="EUR">EUR</option></select></span></div>
         <div class="row" id="eurRateRow" style="display:none"><label>EUR → SEK-kurs</label><span class="unit"><input type="number" id="eurRate" step="0.1"></span></div>
         <div class="out" id="marketSEKrow" style="display:none"><span>Marknadshyra omräknad</span><b id="marketSEK">–</b></div>
-        <p class="hint">Den kundhyra ni rimligen kan ta ut på orten (ex. Gävle 365 kr, Finland 40 EUR / person / natt) — underlag för rekommendationerna i kort 10.</p>
+        <p class="hint">Den kundhyra ni rimligen kan ta ut på orten (ex. Gävle 365 kr, Finland 40 EUR / person / natt). <b>Används endast i kort 10</b> — för att räkna fram max inhyra ni kan acceptera och om priset för er målmarginal är realistiskt. Påverkar inte pris-/%-kalkylen (06/07), som räknas uppifrån kostnad/dygn.</p>
       </div>
     </div>
   </div>
@@ -445,7 +459,7 @@
     <div class="card" style="--accent:#f97316">
       <div class="card-head"><span class="card-num">04</span><span class="card-title">Inhyra &amp; månadskostnader</span></div>
       <div class="body">
-        <div class="row"><label>Avskrivningstid möbler</label><span class="unit"><input type="number" id="deprMonths" min="1" max="999" step="1"> mån</span></div>
+        <div class="row"><label>Avskrivningstid möbler <span class="sub">föreslås = låst period, kan ändras</span></label><span class="unit"><input type="number" id="deprMonths" min="1" max="999" step="1"> mån</span></div>
         <div class="row"><label>Möbleringsavskrivning <span class="sub">engångskostn. / avskrivningstid</span></label><span class="calc" id="depr">–</span></div>
         <div class="deprwarn" id="deprWarn"></div>
         <div class="row"><label>Inhyra (objektshyra)</label><input type="number" id="rent" step="50"></div>
@@ -487,25 +501,29 @@
         <div class="out"><span>Pris totalt / natt (alla)</span><b id="b_nightTot">–</b></div>
         <div class="out"><span>Pris / person / månad</span><b id="b_ppMonth">–</b></div>
         <div class="out"><span>Intäkt totalt / månad</span><b id="b_month">–</b></div>
-        <div class="out"><span>Intäkt hela perioden</span><b id="b_period">–</b></div>
+        <div class="out"><span>Intäkt — potential (hela perioden)</span><b id="b_period">–</b></div>
+        <div class="out lockrow" id="b_periodLockRow" style="display:none"><span>Intäkt — garanterat <span class="sub">låst period</span></span><b id="b_periodLock">–</b></div>
         <div class="out"><span>TB / månad</span><b id="b_tbMonth">–</b></div>
-        <div class="big result"><span class="tip ttl" data-tip="Räknar med att möbelkostnaden försvinner efter avskrivningstiden — efter den punkten ingår bara hyra + drift. Därför går TB/månad × antal månader inte jämnt ihop. Se kort 08 för uppdelningen.">TB totalt (perioden)</span><b id="b_tbTot">–</b></div>
+        <div class="out lockrow" id="b_tbTotLockRow" style="display:none"><span>TB totalt — garanterat <span class="sub">låst period</span></span><b id="b_tbTotLock">–</b></div>
+        <div class="big result"><span class="tip ttl" data-tip="Räknar med att möbelkostnaden försvinner efter avskrivningstiden — efter den punkten ingår bara hyra + drift. Därför går TB/månad × antal månader inte jämnt ihop. Se kort 08 för uppdelningen.">TB totalt <span class="sub" style="display:inline">hela perioden</span></span><b id="b_tbTot">–</b></div>
       </div>
     </div>
 
-    <!-- 07 TB-baserad kalkyl -->
+    <!-- 07 %-baserad kalkyl -->
     <div class="card" style="--accent:#0d9488">
-      <div class="card-head"><span class="card-num">07</span><span class="card-title">TB-baserad kalkyl</span><span class="tag">du sätter marginal</span></div>
+      <div class="card-head"><span class="card-num">07</span><span class="card-title">%-baserad kalkyl</span><span class="tag">du sätter marginal</span></div>
       <div class="body">
-        <div class="row"><label class="nowrap">Önskat täckningsbidrag (TB)</label><span class="unit"><input type="number" id="tbTarget" step="1"> %</span></div>
-        <p class="hint">Priset räknas fram: <span class="nb">kostnad/dygn × (1 + TB)</span>.</p>
+        <div class="row"><label class="nowrap">Önskad marginal (TB)</label><span class="unit"><input type="number" id="tbTarget" step="1"> %</span></div>
+        <p class="hint">Priset räknas fram: <span class="nb">kostnad/dygn × (1 + %)</span>.</p>
         <div class="big"><span>Pris / person / natt</span><b id="a_night">–</b></div>
         <div class="out"><span>Pris totalt / natt (alla)</span><b id="a_nightTot">–</b></div>
         <div class="out"><span>Pris / person / månad</span><b id="a_ppMonth">–</b></div>
         <div class="out"><span>Intäkt totalt / månad</span><b id="a_month">–</b></div>
-        <div class="out"><span>Intäkt hela perioden</span><b id="a_period">–</b></div>
+        <div class="out"><span>Intäkt — potential (hela perioden)</span><b id="a_period">–</b></div>
+        <div class="out lockrow" id="a_periodLockRow" style="display:none"><span>Intäkt — garanterat <span class="sub">låst period</span></span><b id="a_periodLock">–</b></div>
         <div class="out"><span>TB / månad</span><b id="a_tbMonth">–</b></div>
-        <div class="big result"><span class="tip ttl" data-tip="Räknar med att möbelkostnaden försvinner efter avskrivningstiden — efter den punkten ingår bara hyra + drift. Därför går TB/månad × antal månader inte jämnt ihop. Se kort 08 för uppdelningen.">TB totalt (perioden)</span><b id="a_tbTot">–</b></div>
+        <div class="out lockrow" id="a_tbTotLockRow" style="display:none"><span>TB totalt — garanterat <span class="sub">låst period</span></span><b id="a_tbTotLock">–</b></div>
+        <div class="big result"><span class="tip ttl" data-tip="Räknar med att möbelkostnaden försvinner efter avskrivningstiden — efter den punkten ingår bara hyra + drift. Därför går TB/månad × antal månader inte jämnt ihop. Se kort 08 för uppdelningen.">TB totalt <span class="sub" style="display:inline">hela perioden</span></span><b id="a_tbTot">–</b></div>
       </div>
     </div>
   </div>
@@ -516,7 +534,7 @@
     <div class="body">
       <p class="hint" id="tbt_intro">Visar hur TB ändras när möbelkostnaden faller bort efter avskrivningstiden.</p>
       <table class="tbt">
-        <thead><tr><th>Period</th><th>TB-baserad (07)</th><th>Prisbaserad (06)</th></tr></thead>
+        <thead><tr><th>Period</th><th>%-baserad (07)</th><th>Prisbaserad (06)</th></tr></thead>
         <tbody>
           <tr><td><b>Under avskrivning</b><span class="sub" id="tbt_l1"></span></td><td id="a_tbDur">–</td><td id="b_tbDur">–</td></tr>
           <tr><td><b>Efter avskrivning</b><span class="sub" id="tbt_l2"></span></td><td id="a_tbAft">–</td><td id="b_tbAft">–</td></tr>
@@ -527,16 +545,21 @@
   </div>
 
   <!-- 09 BREAKEVEN & AVKASTNING -->
-  <div class="card pgbreak" style="--accent:#10b981;margin-top:16px">
+  <div class="card" style="--accent:#10b981;margin-top:16px">
     <div class="card-head"><span class="card-num">09</span><span class="card-title">Breakeven &amp; avkastning</span><span class="tag">kassaflöde</span></div>
     <div class="body">
-      <p class="hint">Kassaflöde: möbler &amp; engångskostnader som utlägg dag 1, inhyra + drift varje kalendermånad (även vid tomma månader), intäkt enligt beläggningskurvan. Operativt pris = prisbaserat (06) om satt, annars TB-baserat (07).</p>
+      <p class="hint"><b>Breakeven</b> = när ackumulerat resultat går från minus till plus (engångsinvesteringen återbetald). <b>Avkastning</b> = vinst ÷ engångsinvestering. Kassaflöde: engångskostnad dag 1, inhyra + drift varje månad (även tomma), intäkt enligt beläggning. Operativt pris = 06 om satt, annars 07.</p>
       <div class="out"><span>Operativt kundpris</span><b id="be_price">–</b></div>
-      <div class="big"><span>Breakeven efter</span><b id="be_time">–</b></div>
-      <div class="out"><span>Breakeven-datum</span><b id="be_date">–</b></div>
-      <div class="out"><span>Nettoresultat hela perioden <span class="sub">intäkt − drift − engångskostn.</span></span><b id="be_net">–</b></div>
-      <div class="out"><span>Avkastning på engångsinvestering</span><b id="be_roi">–</b></div>
-      <div class="out"><span>Avkastning (årsbasis)</span><b id="be_roiAnn">–</b></div>
+      <table class="tbt" style="margin-top:8px">
+        <thead><tr><th>Mått</th><th>Garanterat <span class="sub">låst period</span></th><th>Potential <span class="sub">hela perioden</span></th></tr></thead>
+        <tbody>
+          <tr><td>Breakeven efter</td><td id="be_timeL">–</td><td id="be_timeF">–</td></tr>
+          <tr><td>Breakeven-datum</td><td id="be_dateL">–</td><td id="be_dateF">–</td></tr>
+          <tr><td>Nettoresultat <span class="sub">intäkt − drift − engångskostn.</span></td><td id="be_netL">–</td><td id="be_netF">–</td></tr>
+          <tr><td>Avkastning på investering</td><td id="be_roiL">–</td><td id="be_roiF">–</td></tr>
+          <tr class="avg"><td>Avkastning (årsbasis)</td><td id="be_roiAnnL">–</td><td id="be_roiAnnF">–</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -544,11 +567,13 @@
   <div class="card" style="--accent:#0d9488;margin-top:16px">
     <div class="card-head"><span class="card-num">10</span><span class="card-title">Rekommendationer / förhandlingsutrymme</span></div>
     <div class="body">
-      <div class="rec-item"><div class="rt">Kundhyra för <span id="recTb">30</span> % marginal</div><div class="rv" id="rec_price">–</div></div>
-      <div class="rec-item"><div class="rt">Rekommenderad max inhyra <span class="sub">vid marknadshyran (kort 02)</span></div>
+      <p class="hint">Beslutsstöd: vilket kundpris som krävs för önskad marginal, max inhyra mot HV utifrån marknadshyran, förhandlingsutrymme och om affären är bra / svag / bör avstås. <b>Risken vägs in:</b> bedömningen utgår från den <b>garanterade (låsta)</b> perioden — intäkt efter låst period räknas som osäker uppsida.</p>
+      <div class="rec-item"><div class="rt">Kundpris för <span id="recTb">30</span> % marginal</div><div class="rv" id="rec_price">–</div></div>
+      <div class="rec-item"><div class="rt">Max inhyra mot HV <span class="sub">vid marknadshyran (kort 02)</span></div>
         <div class="rv"><b id="recRent">–</b></div>
         <button class="addbtn" id="useRent" type="button" onclick="useRecRent()" style="margin-top:8px">↳ Använd som Inhyra i kort 04</button></div>
       <div class="rec-item"><div class="rt">Förhandlingsutrymme inhyra</div><div class="rv" id="rec_negotiate">–</div></div>
+      <div class="rec-item"><div class="rt">Risk efter låst period</div><div class="rv" id="rec_risk">–</div></div>
       <div class="rec-item"><div class="rt">Bedömning av affären</div><div class="verdict" id="rec_verdict">Fyll i fälten för en bedömning.</div></div>
       <div class="hint" id="recNote" style="margin-top:8px"></div>
     </div>
@@ -572,8 +597,8 @@ const pct = n => isFinite(n) ? Math.round(n*100) + ' %' : '–';
 // type 'sum' = klumpsumma (kr). type 'qty' = heltalsantal × kost/st.
 const INV_GROUPS = [
   {cat:'Etableringskostnader', note:'engångskostnader', items:[
-    ['Frånmöblering','sum',2500],['Frakt','sum',1250],['Milersättning','sum',1400],
-    ['Arbete','sum',5000],['Lagerhållning','sum',0]
+    ['Möbleringskostnad','sum',5000],['Framöblering','sum',2500],['Frakt','sum',1250],
+    ['Milersättning','sum',1400],['Lagerhållning','sum',0]
   ]},
   {cat:'Inventarier', note:'', items:[
     ['Sängar','qty',4,1750],['Täcken','qty',4,500],['Kuddar','qty',4,250],['Sängkläder','qty',4,200],
@@ -587,8 +612,8 @@ const INV_GROUPS = [
 ];
 
 const EXAMPLE = {
-  addr:'Karlskrona', typ:'2 sovrum', tenants:4, from:'2025-01-01', to:'2025-06-30',
-  deprMonths:6, rent:6831, el:500, water:500, net:500, other:500, tbTarget:30, priceNight:195,
+  addr:'Karlskrona', typ:'2 sovrum', tenants:4, from:'2025-01-01', to:'2025-06-30', lockMonths:3,
+  deprMonths:3, rent:6831, el:500, water:500, net:500, other:500, tbTarget:30, priceNight:195,
   market:365, marketCur:'SEK', eurRate:11.5
 };
 
@@ -684,11 +709,17 @@ function buildOccUI(){
   const wrap=$('occMonths'); if(!wrap) return;
   const months=monthKeyList($('from').value, $('to').value);
   if(!months.length){ wrap.innerHTML='<div class="occ-empty">Välj Från- och Till-datum för att ange beläggning månad för månad.</div>'; return; }
-  wrap.innerHTML=months.map((m,i)=>{
+  const lockN=Math.round(parseFloat($('lockMonths').value))||0;
+  const hasLock = lockN>0 && lockN<months.length;
+  let html='';
+  months.forEach((m,i)=>{
+    if(hasLock && i===lockN) html+=`<div class="occ-divider">↓ Efter låst HV-period — ej garanterad</div>`;
+    const unlocked = hasLock && i>=lockN;
     const v = occState[m.key]!=null ? occState[m.key] : 100;
-    return `<div class="occ-row"><span class="occ-m">${i+1}. ${escapeHtml(m.label)}<span class="sub">${Math.round(m.days)} dgr</span></span>`
+    html += `<div class="occ-row${unlocked?' occ-unlocked':''}"><span class="occ-m">${i+1}. ${escapeHtml(m.label)}<span class="sub">${Math.round(m.days)} dgr</span></span>`
       + `<span class="unit"><input type="number" class="occ-in" data-key="${m.key}" min="0" max="100" step="5" value="${v}"> %</span></div>`;
-  }).join('');
+  });
+  wrap.innerHTML=html;
   wrap.querySelectorAll('.occ-in').forEach(inp=>inp.addEventListener('input',e=>{
     const val=e.target.value;
     occState[e.target.dataset.key] = val==='' ? 100 : Math.max(0,Math.min(100,parseFloat(val)||0));
@@ -714,6 +745,15 @@ function calc(){
   const months = days/DPM;
   $('days').textContent = days? days.toLocaleString('sv-SE')+' dagar':'–';
   $('months').textContent = months? months.toLocaleString('sv-SE',{minimumFractionDigits:1,maximumFractionDigits:1}):'–';
+
+  // låst HV-period: garanterad delmängd av månaderna (worst-case)
+  const lockN = Math.round(num('lockMonths'))||0;
+  const hasLock = lockN>0 && lockN<ml.length;
+  const mlLock = hasLock ? ml.slice(0,lockN) : ml;
+  let daysLock=0; mlLock.forEach(m=>{ const o=(occState[m.key]!=null?occState[m.key]:100); daysLock+=m.days*(o/100); });
+  daysLock=Math.round(daysLock);
+  const monthsLock = daysLock/DPM;
+  ['a_periodLockRow','a_tbTotLockRow','b_periodLockRow','b_tbTotLockRow'].forEach(id=>{ const e=$(id); if(e) e.style.display = hasLock?'flex':'none'; });
 
   // kostnadsposter (klumpsummor + antal×st)
   let invTot=0;
@@ -762,17 +802,17 @@ function calc(){
   $('ppMonth').textContent = canPP ? kr(ppMonth) : '–';
   $('ppDay').textContent   = canPP ? kr(ppDay)   : '–';
 
-  // 4A — TB-baserat (sätt marginal -> pris)
+  // 07 — %-baserat (sätt marginal -> pris)
   const tb = num('tbTarget')/100;
   const aNight = canPP ? ppDay*(1+tb) : NaN;
-  setOut('a', aNight, tenants, days, months, totCost, canPP, fixed, deprMonths);
+  setOut('a', aNight, tenants, days, months, daysLock, monthsLock, totCost, canPP, fixed, deprMonths);
 
-  // 4B — Pris-baserat (sätt pris -> marginal)
+  // 06 — Pris-baserat (sätt pris -> marginal)
   const bNight = num('priceNight');
   const bMargin = (canPP && ppDay>0) ? (bNight/ppDay)-1 : NaN;
   $('b_margin').textContent = isFinite(bMargin) ? pct(bMargin) : '–';
   $('b_margin').className = !isFinite(bMargin) ? 'marg-na' : (bMargin>=tb ? 'marg-good' : 'marg-low');
-  setOut('b', canPP ? bNight : NaN, tenants, days, months, totCost, canPP, fixed, deprMonths);
+  setOut('b', canPP ? bNight : NaN, tenants, days, months, daysLock, monthsLock, totCost, canPP, fixed, deprMonths);
 
   // 05 — Marginal över tid (efter avskrivna möbler)
   const m2 = (canPP && deprMonths>0) ? Math.max(0, months - deprMonths) : 0;
@@ -821,43 +861,28 @@ function calc(){
 
   // === 09 BREAKEVEN & AVKASTNING (kassaflöde enligt beläggningskurva) ===
   const opPrice = (bNight>0) ? bNight : (isFinite(aNight)?aNight:NaN);
-  const opLabel = (bNight>0) ? 'prisbaserat (06)' : 'TB-baserat (07)';
-  let calDays=0; ml.forEach(m=>calDays+=m.days);
-  const calMonths = calDays/DPM;
-  let beReached=false, beMonthFrac=NaN, beDateTxt='–', netPeriod=NaN, roi=NaN, roiAnn=NaN;
-  if(canPP && isFinite(opPrice) && opPrice>0){
-    const upfront=invTot, mFix=fixed;
-    let cum=-upfront, elapsed=0, found=false, beDays=NaN;
-    ml.forEach(m=>{
-      const o=(occState[m.key]!=null?occState[m.key]:100)/100;
-      const rev=opPrice*tenants*(m.days*o);     // intäkt enligt beläggning
-      const cost=mFix*(m.days/DPM);             // inhyra+drift varje kalenderdag
-      const net=rev-cost;
-      if(!found && cum+net>=0){ beDays=elapsed+(net>0?(-cum)/net:0)*m.days; found=true; }
-      cum+=net; elapsed+=m.days;
-    });
-    beReached=found;
-    if(found){
-      beMonthFrac=beDays/DPM;
-      const d=new Date($('from').value); d.setDate(d.getDate()+Math.round(beDays));
-      beDateTxt=d.toLocaleDateString('sv-SE');
-    }
-    const totalRev=opPrice*tenants*days;        // days = belagda dagar hela perioden
-    netPeriod=totalRev - mFix*calMonths - upfront;
-    roi = upfront>0 ? netPeriod/upfront : NaN;
-    roiAnn = (isFinite(roi)&&calMonths>0) ? roi*(12/calMonths) : NaN;
-  }
+  const opLabel = (bNight>0) ? 'prisbaserat (06)' : '%-baserat (07)';
   $('be_price').textContent = (isFinite(opPrice)&&opPrice>0) ? kr(opPrice)+' / person / natt · '+opLabel : '–';
-  $('be_time').textContent  = (canPP&&isFinite(opPrice)&&opPrice>0) ? (beReached?f1(beMonthFrac)+' mån':'ej inom perioden') : '–';
-  $('be_date').textContent  = beReached ? beDateTxt : '–';
-  $('be_net').textContent   = isFinite(netPeriod) ? kr(netPeriod) : '–';
-  $('be_net').classList.toggle('depr-alert', isFinite(netPeriod)&&netPeriod<0);
-  $('be_roi').textContent   = isFinite(roi) ? pct(roi) : '–';
-  $('be_roiAnn').textContent= isFinite(roiAnn) ? pct(roiAnn) : '–';
+  const fromD=$('from').value;
+  const beDateStr = beDays => { const d=new Date(fromD); d.setDate(d.getDate()+Math.round(beDays)); return d.toLocaleDateString('sv-SE'); };
+  let beL=null, beF=null;
+  if(canPP && isFinite(opPrice) && opPrice>0){
+    beF = scenarioBE(ml,     opPrice, tenants, fixed, invTot);
+    beL = hasLock ? scenarioBE(mlLock, opPrice, tenants, fixed, invTot) : beF;
+  }
+  const fillBE=(sfx,s)=>{
+    if(!s){ ['be_time','be_date','be_net','be_roi','be_roiAnn'].forEach(id=>{$(id+sfx).textContent='–';$(id+sfx).className='';}); return; }
+    $('be_time'+sfx).textContent = s.found ? f1(s.beMonthFrac)+' mån' : 'ej inom perioden';
+    $('be_date'+sfx).textContent = s.found ? beDateStr(s.beDays) : '–';
+    $('be_net'+sfx).textContent  = kr(s.netPeriod); $('be_net'+sfx).className = (s.netPeriod<0)?'depr-alert':'';
+    $('be_roi'+sfx).textContent  = isFinite(s.roi)?pct(s.roi):'–';
+    $('be_roiAnn'+sfx).textContent = isFinite(s.roiAnn)?pct(s.roiAnn):'–';
+  };
+  fillBE('L', beL); fillBE('F', beF);
 
   // === 10 REKOMMENDATIONER / FÖRHANDLINGSUTRYMME ===
   $('rec_price').innerHTML = isFinite(aNight)
-    ? `Ta minst <b>${kr(aNight)}</b> / person / natt för att nå ${Math.round(tb*100)} % TB${(marketSEK>0)?` — marknadshyran ${kr(marketSEK)} ${marketSEK>=aNight?'<b style="color:var(--good)">räcker ✓</b>':'<b style="color:var(--warn)">räcker inte ✗</b>'}`:''}.`
+    ? `Ta minst <b>${kr(aNight)}</b> / person / natt för att nå ${Math.round(tb*100)} % marginal${(marketSEK>0)?` — marknadshyran ${kr(marketSEK)} ${marketSEK>=aNight?'<b style="color:var(--good)">räcker ✓</b>':'<b style="color:var(--warn)">räcker inte ✗</b>'}`:''}.`
     : 'Fyll i period, antal hyresgäster och kostnader.';
   const negEl=$('rec_negotiate');
   if(isFinite(recRent) && rent>0){
@@ -871,18 +896,57 @@ function calc(){
   } else {
     negEl.textContent = 'Fyll i marknadshyra (kort 02), antal och kostnader.';
   }
+  // Risk efter låst period
+  const riskEl=$('rec_risk');
+  if(hasLock){
+    riskEl.innerHTML = `Endast <b>${lockN} mån</b> är garanterade i HV-avtalet. Intäkten efter låst period (~${f1(months-monthsLock)} belagda mån) är <b>ej säkrad</b> och kräver förlängt avtal — räkna med den som uppsida, inte som given.`;
+  } else if(lockN>0){
+    riskEl.textContent = 'Hela kalkylperioden ligger inom den låsta HV-perioden — ingen osäker del.';
+  } else {
+    riskEl.textContent = 'Ingen låst period angiven (kort 01) — hela perioden behandlas som garanterad. Ange låst period för riskvägning.';
+  }
+  // Bedömning — utgår från GARANTERAT (låst) som worst-case + flaskhals-diagnos
   const vEl=$('rec_verdict');
+  const lockTxt = hasLock ? `den garanterade perioden (${lockN} mån)` : 'hela perioden';
+  // --- flaskhalsdiagnos: peka ut främsta hindret + riktad åtgärd ---
+  const calDaysFull = ml.reduce((s,m)=>s+m.days,0);
+  const avgOcc = calDaysFull>0 ? days/calDaysFull : NaN;
+  const tips=[];
+  if(marketSEK>0 && isFinite(aNight) && aNight>marketSEK)
+    tips.push(`kundpriset för ${Math.round(tb*100)} % marginal (${kr(aNight)}/natt) ligger <b>över marknadshyran</b> (${kr(marketSEK)}) — sänk målmarginalen eller kostnaderna`);
+  if(isFinite(recRent) && rent>recRent)
+    tips.push(`<b>inhyran är för hög</b> — förhandla ner ~${kr(rent-recRent)}/mån (mot ≤ ${kr(recRent)})`);
+  if(isFinite(avgOcc) && avgOcc<0.85)
+    tips.push(`<b>låg beläggning</b> (snitt ${pct(avgOcc)}) tär på resultatet`);
+  if(isFinite(opPrice) && opPrice>0 && isFinite(deprRaw) && deprRaw > 0.35*(opPrice*tenants*DPM))
+    tips.push(`<b>tung engångskostnad</b> (${kr(invTot)}, avskrivning ${kr(deprRaw)}/mån) — förläng avskrivningstiden`);
+  const tipTxt = tips.length ? ` <b>Flaskhals:</b> ${tips.slice(0,2).join('; ')}.` : '';
+  const upside = (hasLock && beF && beF.netPeriod>0) ? ` Vid förlängning hela vägen: upp till ${kr(beF.netPeriod)} (avkastning ${pct(beF.roi)}).` : '';
+
   if(!canPP || !isFinite(opPrice) || opPrice<=0){
     vEl.className='verdict'; vEl.textContent='Fyll i period, antal hyresgäster och pris (kort 06/07) för en bedömning.';
-  } else if(netPeriod>0 && beReached && beMonthFrac <= calMonths*0.6){
-    vEl.className='verdict ok';
-    vEl.innerHTML = `✓ <b>Rimlig affär.</b> Breakeven efter ${f1(beMonthFrac)} mån (av ${f1(calMonths)}) och positivt nettoresultat ${kr(netPeriod)}. Avkastning ${pct(roi)} på engångsinvesteringen (${kr(invTot)}).`;
-  } else if(netPeriod>0 && beReached){
+  } else if(beL && beL.found && beL.netPeriod>0){
+    if(beL.beMonthFrac <= beL.calMonths*0.5 && beL.roi>=0.4){
+      vEl.className='verdict ok';
+      vEl.innerHTML = `★ <b>Mycket stark affär.</b> ${lockTxt} betalar tillbaka engångsinvesteringen (${kr(invTot)}) redan efter ${f1(beL.beMonthFrac)} mån — garanterat netto ${kr(beL.netPeriod)}, avkastning ${pct(beL.roi)}.${upside}`;
+    } else if(beL.roi < 0.10){
+      vEl.className='verdict warn';
+      vEl.innerHTML = `○ <b>Godkänd — men tunn marginal.</b> ${lockTxt} går nätt och jämnt plus (netto ${kr(beL.netPeriod)}, avkastning ${pct(beL.roi)}; breakeven ${f1(beL.beMonthFrac)} mån) — liten buffert för tomma nätter.${tipTxt}${upside}`;
+    } else {
+      vEl.className='verdict ok';
+      vEl.innerHTML = `✓ <b>Bra affär.</b> Redan ${lockTxt} betalar tillbaka engångsinvesteringen (${kr(invTot)}) — breakeven efter ${f1(beL.beMonthFrac)} mån, garanterat netto ${kr(beL.netPeriod)} (avkastning ${pct(beL.roi)}).${upside}`;
+    }
+  } else if(beF && beF.found && beF.netPeriod>0){
     vEl.className='verdict warn';
-    vEl.innerHTML = `△ <b>Marginell.</b> Perioden går plus (${kr(netPeriod)}) men breakeven nås sent (${f1(beMonthFrac)} av ${f1(calMonths)} mån). Förhandla ner inhyran eller höj kundhyran för bättre marginal.`;
+    vEl.innerHTML = `△ <b>Svag / riskfylld.</b> ${lockTxt} räcker <b>inte</b> till breakeven — affären går plus först om HV-avtalet förlängs (breakeven ${f1(beF.beMonthFrac)} mån, efter låst period). Garanterat netto ${kr(beL?beL.netPeriod:NaN)}.${tipTxt} Annars: förhandla, höj kundpriset eller förläng låsningen.`;
   } else {
+    const netF = beF?beF.netPeriod:NaN;
     vEl.className='verdict bad';
-    vEl.innerHTML = `✗ <b>Tveksam affär.</b> ${beReached?'':'Breakeven nås inte inom perioden. '}Nettoresultat ${kr(netPeriod)}. Beläggningskurvan + engångskostnaden (${kr(invTot)}) bär inte affären${(isFinite(recRent)&&rent>recRent)?` — förhandla ner inhyran ~${kr(rent-recRent)}/mån`:''} eller höj kundhyran.`;
+    if(isFinite(netF) && netF > -0.15*invTot){
+      vEl.innerHTML = `✗ <b>Bär sig inte — men nära.</b> Hela perioden landar på ${kr(netF)} (strax under noll) — små justeringar kan vända den.${tipTxt}`;
+    } else {
+      vEl.innerHTML = `✗ <b>Bör avstås / omförhandlas.</b> Inte ens hela perioden betalar tillbaka engångsinvesteringen (${kr(invTot)}) — nettoresultat ${kr(netF)}.${tipTxt}`;
+    }
   }
 
   localStorage.setItem('nordicta_kalkyl_v3', serialize());
@@ -903,24 +967,45 @@ function setTBTime(p, night, tenants, fixed, depr, deprMonths, months, ok){
   $(p+'_tbAvg').innerHTML = (isFinite(avgPct)?pct(avgPct):'–') + '<span class="sub">' + kr(totTB/months) + '/mån</span>';
 }
 
-function setOut(p, night, tenants, days, months, totCost, ok, fixed, deprMonths){
+function setOut(p, night, tenants, days, months, daysLock, monthsLock, totCost, ok, fixed, deprMonths){
   const show = ok && isFinite(night);
   const f = v => (show && isFinite(v)) ? kr(v) : '–';
   const nightTot = night*tenants;
   const R = nightTot*DPM;                       // intäkt / månad
+  const tbTotFor = mo => { const m1=Math.min(deprMonths,mo), m2=Math.max(0,mo-deprMonths); return (R-totCost)*m1 + (R-fixed)*m2; };
   $(p+'_nightTot').textContent = f(nightTot);
   $(p+'_ppMonth').textContent  = f(night*DPM);
   $(p+'_month').textContent    = f(R);
-  $(p+'_period').textContent   = f(nightTot*days);
   $(p+'_tbMonth').textContent  = f(R - totCost);   // TB/mån under avskrivning (steady-state)
-  // TB totalt: möbelkostnaden (totCost−fixed) belastar bara avskrivningstiden, sen faller den bort
-  const m1 = Math.min(deprMonths, months), m2 = Math.max(0, months - deprMonths);
-  $(p+'_tbTot').textContent    = f((R - totCost)*m1 + (R - fixed)*m2);
+  // potential (hela perioden)
+  $(p+'_period').textContent   = f(nightTot*days);
+  $(p+'_tbTot').textContent    = f(tbTotFor(months));
+  // garanterat (låst period)
+  $(p+'_periodLock').textContent = f(nightTot*daysLock);
+  $(p+'_tbTotLock').textContent  = f(tbTotFor(monthsLock));
   if($(p+'_night')) $(p+'_night').textContent = f(night);
 }
 
+// kassaflödesscenario över en lista månader: breakeven + avkastning
+function scenarioBE(monthsArr, opPrice, tenants, fixed, upfront){
+  let cum=-upfront, elapsed=0, found=false, beDays=NaN, calDays=0, occDays=0;
+  monthsArr.forEach(m=>{
+    const o=(occState[m.key]!=null?occState[m.key]:100)/100;
+    const rev=opPrice*tenants*(m.days*o);
+    const cost=fixed*(m.days/DPM);
+    const net=rev-cost;
+    if(!found && cum+net>=0){ beDays=elapsed+(net>0?(-cum)/net:0)*m.days; found=true; }
+    cum+=net; elapsed+=m.days; calDays+=m.days; occDays+=m.days*o;
+  });
+  const calMonths=calDays/DPM;
+  const netPeriod=opPrice*tenants*occDays - fixed*calMonths - upfront;
+  return {found, beDays, beMonthFrac:found?beDays/DPM:NaN, netPeriod,
+          roi:upfront>0?netPeriod/upfront:NaN,
+          roiAnn:(upfront>0&&calMonths>0)?(netPeriod/upfront)*(12/calMonths):NaN, calMonths};
+}
+
 // --- persistens / fyllning ---
-const FIELDS = ['addr','typ','tenants','from','to','deprMonths','rent','el','water','net','other','tbTarget','priceNight','market','marketCur','eurRate'];
+const FIELDS = ['addr','typ','tenants','from','to','lockMonths','deprMonths','rent','el','water','net','other','tbTarget','priceNight','market','marketCur','eurRate'];
 function fillFields(d){
   FIELDS.forEach(k=>{ if(d[k]!==undefined) $(k).value=d[k]; });
   occState = (d.occ && typeof d.occ==='object') ? {...d.occ} : {};
@@ -1043,6 +1128,13 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<'
 $('deprMonths').addEventListener('input',e=>{
   const v=e.target.value.replace(/\D/g,'').slice(0,3);
   if(e.target.value!==v) e.target.value=v;
+});
+// låst period: max 3 siffror; föreslår avskrivningstid = låst period; bygger om beläggningsmarkeringen
+$('lockMonths').addEventListener('input',e=>{
+  const v=e.target.value.replace(/\D/g,'').slice(0,3);
+  if(e.target.value!==v) e.target.value=v;
+  if(v!=='') $('deprMonths').value=v;   // föreslå avskrivningstid (kan ändras manuellt)
+  buildOccUI(); calc();
 });
 // objektets fält + kostnads/pris/marknadsfält → räkna om
 document.querySelectorAll('#addr,#rent,#el,#water,#net,#other,#tbTarget,#priceNight,#deprMonths,#market,#eurRate')

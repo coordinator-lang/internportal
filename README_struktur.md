@@ -54,7 +54,7 @@ Nordicta Internal Website/
 │   └── bostadskalkylator_v3.3.html      ← internt prisverktyg, hostad oförändrad (versionshanteras separat av användaren)
 │
 └── Inflytt_Utflytt/
-    └── inflytt-utflytt-guide_v2.1.html  ← workflow-guide för in-/utflytt, hostad oförändrad (versionshanteras separat)
+    └── inflytt-utflytt-guide_v3.8.html  ← workflow-guide för in-/utflytt, hostad oförändrad (har egen "← Internportal"-länk; versionshanteras separat)
 ```
 
 > **OBS – Hyresvardsformular/ är MEDVETET INTE länkad** från index eller någon

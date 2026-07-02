@@ -449,6 +449,27 @@
     .step, .pre, .ref-card, .done { break-inside: avoid; }
     body { background: #fff; }
   }
+  /* copy-to-clipboard */
+  .copy-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--navy); color: #fff; border: none;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 8px 13px; border-radius: 8px; cursor: pointer;
+    transition: background .18s, transform .12s;
+  }
+  .copy-btn:hover { background: #2a2a45; }
+  .copy-btn:active { transform: translateY(1px); }
+  .copy-btn .cb-ico { font-size: 13px; }
+  .copy-btn .cb-lang {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .5px;
+    background: rgba(255,255,255,.15); padding: 1px 5px; border-radius: 4px;
+  }
+  .copy-btn.copied { background: var(--green); }
+  .copy-btn.copied .cb-lang { background: rgba(255,255,255,.2); }
+  .tpl-html { display: none; }
+  .copy-cap { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mono-muted); margin-top: 12px; margin-bottom: 3px; }
+  .copy-cap:first-of-type { margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -510,6 +531,190 @@
           <div class="field">
             <span class="field-label">Mall</span>
             <span class="mail-pill"><span class="m-ico">&#9993;</span> HG Inflytt</span>
+            <div class="copy-row">
+              <button class="copy-btn" data-key="tpl-hginflytt-sv"><span class="cb-ico">&#128203;</span> Kopiera mall <span class="cb-lang">SV</span></button>
+              <button class="copy-btn" data-key="tpl-hginflytt-en"><span class="cb-ico">&#128203;</span> Copy template <span class="cb-lang">EN</span></button>
+            </div>
+            <div class="tpl-html" id="tpl-hginflytt-sv-html" hidden><p>Hej,</p>
+<p>Mitt namn är Marie och jag kommer att vara er Client Service Manager för denna bokning (bokningsnummer: XXXX). Jag kommer att vara er huvudsakliga kontaktperson under vistelsen och säkerställa att allt hanteras smidigt och enligt plan.</p>
+<p>För att förbereda inför er ankomst ber vi er vänligen att genomföra stegen nedan.</p>
+<p><b>1. Skicka via e-post</b><br>Vänligen svara på detta mejl med följande information:</p>
+<ul>
+<li>Ankomstdatum och beräknad ankomsttid</li>
+<li>Namn och telefonnummer till den person som är ansvarig för bokningen utanför kontorstid</li>
+<li>Registreringsnummer på fordon (om detta anges i avtalet)</li>
+</ul>
+<p><b>2. Registrera kontaktperson på plats</b><br>Den person som kommer att vara ansvarig på plats under vistelsen måste registreras via formuläret nedan:<br><a href="https://wkf.ms/3XpLEM6">Hyresgästregistrering</a></p>
+<p><b>3. Inflyttningsinspektion (obligatorisk)</b><br>Efter inflyttning ska en inflyttningsinspektion genomföras för att dokumentera lägenhetens skick vid vistelsens start. Vänligen använd länken nedan:<br><a href="https://wkf.ms/4aYkotM">Inflyttningsinspektion</a></p>
+<p>Detta steg är viktigt för att säkerställa att eventuellt befintligt slitage eller skador dokumenteras och inte kopplas till er vistelse.</p>
+<p><b>Service &amp; support under vistelsen</b></p>
+<p><b>Ej akuta ärenden</b><br>Alla serviceärenden ska skickas in via formuläret nedan:<br><a href="https://www.nordicta.com/service-request/">Serviceformulär</a></p>
+<p>Formuläret är tillgängligt dygnet runt och alla ärenden hanteras under kontorstid.</p>
+<p>Exempel på ärenden:</p>
+<ul>
+<li>Underhåll</li>
+<li>Städning</li>
+<li>Nycklar</li>
+<li>Allmänna frågor</li>
+</ul>
+<p><b>Kontorstider</b><br>Måndag–fredag, 08:00–17:00</p>
+<p><b>Akuta nödsituationer (utanför kontorstid)</b><br>Vid akuta ärenden utanför kontorstid ber vi er kontakta oss via telefon endast.</p>
+<p>Exempel på akuta ärenden:</p>
+<ul>
+<li>Vattenläcka</li>
+<li>Ingen värme eller inget varmvatten</li>
+<li>Strömavbrott</li>
+<li>Utlåsning</li>
+<li>Allvarlig skada eller säkerhetsproblem</li>
+<li>Brand eller rökutveckling (vänligen kontakta räddningstjänst omedelbart)</li>
+</ul>
+<p>Observera att e-post och WhatsApp-meddelanden inte övervakas utanför kontorstid och därför inte ska användas för akuta ärenden.</p>
+<p>När vi har mottagit den efterfrågade informationen samt betalningen kommer vi att fortsätta med ankomstarrangemangen och skicka era incheckningsuppgifter.</p>
+<p>Vänligen observera att samtliga våra boenden är helt rökfria. Rökning inomhus medför en straffavgift.</p>
+<p>Om ni har några frågor är ni varmt välkomna att höra av er — jag finns här för att hjälpa till.</p></div>
+            <div class="tpl-html" id="tpl-hginflytt-en-html" hidden><p>Hello,</p>
+<p>My name is Marie, and I will be your Client Service Manager for this booking (booking number: XXXX). I will be your main point of contact throughout the stay and ensure that everything is handled smoothly and according to plan.</p>
+<p>To prepare for your arrival, we kindly ask you to complete the steps below.</p>
+<p><b>1. Send by email</b><br>Please reply to this email with:</p>
+<ul>
+<li>Arrival date and estimated arrival time</li>
+<li>Name and number of the person responsible for the booking outside office hours</li>
+<li>Registration plate of vehicle (if applied in contract)</li>
+</ul>
+<p><b>2. Register on-site contact person</b><br>The person who will be responsible on-site during the stay must be registered via the form below:<br><a href="https://wkf.ms/3XpLEM6">Tenant registration</a></p>
+<p><b>3. Move-in inspection (mandatory)</b><br>After move-in, a move-in inspection must be completed to document the condition of the apartment at the start of the stay. Please use the link below:<br><a href="https://wkf.ms/4aYkotM">Move-in inspection</a></p>
+<p>This step is important to ensure that any existing wear or damage is recorded and not attributed to your stay.</p>
+<p><b>Service &amp; Support During the Stay</b></p>
+<p><b>Non-urgent matters</b><br>All service requests must be submitted via the form below:<br><a href="https://www.nordicta.com/service-request/">Service form</a></p>
+<p>The form is available 24/7, and all requests are handled during office hours. Examples include maintenance issues, cleaning, keys, or general inquiries.</p>
+<p><b>Office hours</b><br>Monday–Friday, 08:00–17:00</p>
+<p><b>Urgent emergencies (outside office hours)</b><br>For urgent matters outside office hours, please contact us by phone only.</p>
+<p>Examples include:</p>
+<ul>
+<li>Water leak</li>
+<li>No heating or hot water</li>
+<li>Power outage</li>
+<li>Lockout</li>
+<li>Serious damage or security issue</li>
+<li>Fire or smoke (please contact emergency services immediately)</li>
+</ul>
+<p>Please note that emails or WhatsApp messages are not monitored outside office hours and should not be used for urgent matters.</p>
+<p>Once we have received the requested information and payment, we will proceed with the arrival arrangements and send your check-in details.</p>
+<p>Please note that all our accommodations are strictly non-smoking. Smoking indoors will result in a penalty fee.</p>
+<p>If you have any questions, feel free to reach out — I'm here to help.</p></div>
+            <script type="text/plain" id="tpl-hginflytt-sv-txt">Hej,
+
+Mitt namn är Marie och jag kommer att vara er Client Service Manager för denna bokning (bokningsnummer: XXXX). Jag kommer att vara er huvudsakliga kontaktperson under vistelsen och säkerställa att allt hanteras smidigt och enligt plan.
+
+För att förbereda inför er ankomst ber vi er vänligen att genomföra stegen nedan.
+
+1. Skicka via e-post
+Vänligen svara på detta mejl med följande information:
+• Ankomstdatum och beräknad ankomsttid
+• Namn och telefonnummer till den person som är ansvarig för bokningen utanför kontorstid
+• Registreringsnummer på fordon (om detta anges i avtalet)
+
+2. Registrera kontaktperson på plats
+Den person som kommer att vara ansvarig på plats under vistelsen måste registreras via formuläret nedan:
+Hyresgästregistrering: https://wkf.ms/3XpLEM6
+
+3. Inflyttningsinspektion (obligatorisk)
+Efter inflyttning ska en inflyttningsinspektion genomföras för att dokumentera lägenhetens skick vid vistelsens start.
+Vänligen använd länken nedan:
+Inflyttningsinspektion: https://wkf.ms/4aYkotM
+
+Detta steg är viktigt för att säkerställa att eventuellt befintligt slitage eller skador dokumenteras och inte kopplas till er vistelse.
+
+Service & support under vistelsen
+
+Ej akuta ärenden
+Alla serviceärenden ska skickas in via formuläret nedan:
+Serviceformulär: https://www.nordicta.com/service-request/
+
+Formuläret är tillgängligt dygnet runt och alla ärenden hanteras under kontorstid.
+
+Exempel på ärenden:
+• Underhåll
+• Städning
+• Nycklar
+• Allmänna frågor
+
+Kontorstider
+Måndag–fredag, 08:00–17:00
+
+Akuta nödsituationer (utanför kontorstid)
+Vid akuta ärenden utanför kontorstid ber vi er kontakta oss via telefon endast.
+
+Exempel på akuta ärenden:
+• Vattenläcka
+• Ingen värme eller inget varmvatten
+• Strömavbrott
+• Utlåsning
+• Allvarlig skada eller säkerhetsproblem
+• Brand eller rökutveckling (vänligen kontakta räddningstjänst omedelbart)
+
+Observera att e-post och WhatsApp-meddelanden inte övervakas utanför kontorstid och därför inte ska användas för akuta ärenden.
+
+När vi har mottagit den efterfrågade informationen samt betalningen kommer vi att fortsätta med ankomstarrangemangen och skicka era incheckningsuppgifter.
+
+Vänligen observera att samtliga våra boenden är helt rökfria. Rökning inomhus medför en straffavgift.
+
+Om ni har några frågor är ni varmt välkomna att höra av er — jag finns här för att hjälpa till.
+</script>
+            <script type="text/plain" id="tpl-hginflytt-en-txt">Hello,
+
+My name is Marie, and I will be your Client Service Manager for this booking (booking number: XXXX). I will be your main point of contact throughout the stay and ensure that everything is handled smoothly and according to plan.
+
+To prepare for your arrival, we kindly ask you to complete the steps below.
+
+1. Send by email
+Please reply to this email with:
+• Arrival date and estimated arrival time
+• Name and number of the person responsible for the booking outside office hours
+• Registration plate of vehicle (if applied in contract)
+
+2. Register on-site contact person
+The person who will be responsible on-site during the stay must be registered via the form below:
+Tenant registration: https://wkf.ms/3XpLEM6
+
+3. Move-in inspection (mandatory)
+After move-in, a move-in inspection must be completed to document the condition of the apartment at the start of the stay.
+Please use the link below:
+Move-in inspection: https://wkf.ms/4aYkotM
+
+This step is important to ensure that any existing wear or damage is recorded and not attributed to your stay.
+
+Service & Support During the Stay
+
+Non-urgent matters
+All service requests must be submitted via the form below:
+Service form: https://www.nordicta.com/service-request/
+
+The form is available 24/7, and all requests are handled during office hours.
+Examples include maintenance issues, cleaning, keys, or general inquiries.
+
+Office hours
+Monday–Friday, 08:00–17:00
+
+Urgent emergencies (outside office hours)
+For urgent matters outside office hours, please contact us by phone only.
+
+Examples include:
+• Water leak
+• No heating or hot water
+• Power outage
+• Lockout
+• Serious damage or security issue
+• Fire or smoke (please contact emergency services immediately)
+
+Please note that emails or WhatsApp messages are not monitored outside office hours and should not be used for urgent matters.
+
+Once we have received the requested information and payment, we will proceed with the arrival arrangements and send your check-in details.
+
+Please note that all our accommodations are strictly non-smoking. Smoking indoors will result in a penalty fee.
+
+If you have any questions, feel free to reach out — I'm here to help.
+</script>
           </div>
           <div class="field">
             <span class="field-label">N&auml;r?</span>
@@ -536,6 +741,116 @@
           <div class="field">
             <span class="field-label">Mall</span>
             <span class="mail-pill"><span class="m-ico">&#9993;</span> HV Inflytt</span>
+            <div class="copy-row">
+              <button class="copy-btn" data-key="tpl-hvinflytt-sv"><span class="cb-ico">&#128203;</span> Kopiera mall <span class="cb-lang">SV</span></button>
+              <button class="copy-btn" data-key="tpl-hvinflytt-en"><span class="cb-ico">&#128203;</span> Copy template <span class="cb-lang">EN</span></button>
+            </div>
+            <div class="tpl-html" id="tpl-hvinflytt-sv-html" hidden><p>Hej,</p>
+<p>Jag hoppas att allt är bra med dig.</p>
+<p>Mitt namn är Marie och jag arbetar som Client Service Manager på Nordicta. Jag kommer att vara din huvudsakliga kontaktperson gällande uthyrningen av xxxx.</p>
+<p>Nu när vi förbereder inför den kommande vistelsen vill jag dela med mig av viktig information samt be om hjälp med några detaljer för att säkerställa att allt fungerar smidigt.</p>
+<p><b>Checklista &amp; förberedelse av lägenheten</b></p>
+<p>Du bör redan ha mottagit vår checklista som beskriver allt som behöver vara klart inför uthyrningen. Vänligen ta en stund att gå igenom den och säkerställ att lägenheten är i gott skick innan vistelsen börjar. Om du saknar checklistan är det bara att meddela mig så skickar jag den igen.</p>
+<p><b>Inflyttningsbesiktning</b><br>Vi ber dig även att genomföra inflyttningsbesiktningen via länken nedan:<br><a href="https://wkf.ms/4dJc5DP">Inflyttningsbesiktning</a></p>
+<p>Denna dokumentation är viktig eftersom den registrerar lägenhetens skick vid vistelsens start och underlättar eventuella frågor efter utflyttning.</p>
+<p><b>Information vi behöver från dig</b><br>För att kunna slutföra förberedelserna ber vi dig vänligen att skicka följande information:</p>
+<ul>
+<li>Instruktioner för nyckelöverlämning (t.ex. nyckelbox, kod eller liknande)</li>
+<li>Namn och kontaktuppgifter till ansvarig person vid akuta ärenden utanför kontorstid</li>
+<li>Information om sophantering</li>
+<li>Entréinstruktioner såsom portkod eller liknande</li>
+<li>Information om eventuell registrering av bilens registreringsnummer eller andra parkeringsuppgifter</li>
+<li>Övrig viktig information som kan vara bra för gästerna att känna till</li>
+</ul>
+<p>Du är varmt välkommen att återkomma när det passar dig.</p>
+<p>Jag ser fram emot ett gott samarbete och tveka inte att höra av dig om du har några frågor eller funderingar.</p>
+<p>Önskar dig en fortsatt fin dag!</p></div>
+            <div class="tpl-html" id="tpl-hvinflytt-en-html" hidden><p>Hello,</p>
+<p>I hope you are doing well.</p>
+<p>My name is Marie, and I am a Client Service Manager at Nordicta. I will be your main point of contact regarding the rental of xxxx.</p>
+<p>As we are now preparing for the upcoming stay, I would like to share some important information and kindly ask for your assistance with a few details to ensure everything runs smoothly.</p>
+<p><b>Checklist &amp; apartment preparation</b></p>
+<p>You should have already received our checklist, which outlines everything needed ahead of the rental. Please take a moment to review it and ensure the apartment is in good condition prior to the stay. If you are missing the checklist, just let me know and I will resend it.</p>
+<p><b>Move-in inspection</b><br>Please also remember to complete the move-in inspection via the link below:<br><a href="https://wkf.ms/3CJNUr6">Move-in inspection</a></p>
+<p>This documentation is important as it records the condition of the apartment at the start of the stay and helps facilitate any potential matters after move-out.</p>
+<p><b>Information needed from you</b><br>To finalize the preparations, I kindly ask you to provide the following:</p>
+<ul>
+<li>Instructions for key handover (e.g. key box, code, or similar)</li>
+<li>Name and contact details of a responsible person for urgent matters outside office hours</li>
+<li>Information regarding waste management</li>
+<li>Entry instructions such as door codes or similar</li>
+<li>If vehicle registration number or any other parking details are required, please let us know.</li>
+<li>Any other important information that may be useful for the guests</li>
+</ul>
+<p>Please feel free to get back to me at your convenience.</p>
+<p>I look forward to a great collaboration, and don't hesitate to reach out if you have any questions or concerns.</p>
+<p>Wishing you a great day!</p></div>
+            <script type="text/plain" id="tpl-hvinflytt-sv-txt">Hej,
+
+Jag hoppas att allt är bra med dig.
+
+Mitt namn är Marie och jag arbetar som Client Service Manager på Nordicta. Jag kommer att vara din huvudsakliga kontaktperson gällande uthyrningen av xxxx.
+
+Nu när vi förbereder inför den kommande vistelsen vill jag dela med mig av viktig information samt be om hjälp med några detaljer för att säkerställa att allt fungerar smidigt.
+
+Checklista & förberedelse av lägenheten
+
+Du bör redan ha mottagit vår checklista som beskriver allt som behöver vara klart inför uthyrningen. Vänligen ta en stund att gå igenom den och säkerställ att lägenheten är i gott skick innan vistelsen börjar. Om du saknar checklistan är det bara att meddela mig så skickar jag den igen.
+
+Inflyttningsbesiktning
+Vi ber dig även att genomföra inflyttningsbesiktningen via länken nedan:
+Inflyttningsbesiktning: https://wkf.ms/4dJc5DP
+
+Denna dokumentation är viktig eftersom den registrerar lägenhetens skick vid vistelsens start och underlättar eventuella frågor efter utflyttning.
+
+Information vi behöver från dig
+För att kunna slutföra förberedelserna ber vi dig vänligen att skicka följande information:
+• Instruktioner för nyckelöverlämning (t.ex. nyckelbox, kod eller liknande)
+• Namn och kontaktuppgifter till ansvarig person vid akuta ärenden utanför kontorstid
+• Information om sophantering
+• Entréinstruktioner såsom portkod eller liknande
+• Information om eventuell registrering av bilens registreringsnummer eller andra parkeringsuppgifter
+• Övrig viktig information som kan vara bra för gästerna att känna till
+
+Du är varmt välkommen att återkomma när det passar dig.
+
+Jag ser fram emot ett gott samarbete och tveka inte att höra av dig om du har några frågor eller funderingar.
+
+Önskar dig en fortsatt fin dag!
+</script>
+            <script type="text/plain" id="tpl-hvinflytt-en-txt">Hello,
+
+I hope you are doing well.
+
+My name is Marie, and I am a Client Service Manager at Nordicta. I will be your main point of contact regarding the rental of xxxx.
+
+As we are now preparing for the upcoming stay, I would like to share some important information and kindly ask for your assistance with a few details to ensure everything runs smoothly.
+
+Checklist & apartment preparation
+
+You should have already received our checklist, which outlines everything needed ahead of the rental. Please take a moment to review it and ensure the apartment is in good condition prior to the stay. If you are missing the checklist, just let me know and I will resend it.
+
+Move-in inspection
+Please also remember to complete the move-in inspection via the link below:
+Move-in inspection: https://wkf.ms/3CJNUr6
+
+This documentation is important as it records the condition of the apartment at the start of the stay and helps facilitate any potential matters after move-out.
+
+Information needed from you
+To finalize the preparations, I kindly ask you to provide the following:
+• Instructions for key handover (e.g. key box, code, or similar)
+• Name and contact details of a responsible person for urgent matters outside office hours
+• Information regarding waste management
+• Entry instructions such as door codes or similar
+• If vehicle registration number or any other parking details are required, please let us know.
+• Any other important information that may be useful for the guests
+
+Please feel free to get back to me at your convenience.
+
+I look forward to a great collaboration, and don't hesitate to reach out if you have any questions or concerns.
+
+Wishing you a great day!
+</script>
           </div>
           <div class="field">
             <span class="field-label">N&auml;r?</span>
@@ -627,6 +942,108 @@
           <div class="field">
             <span class="field-label">Mall</span>
             <span class="mail-pill"><span class="m-ico">&#9993;</span> HG Utflytt</span>
+            <div class="copy-cap">Avresa n&auml;rmar sig</div>
+            <div class="copy-row">
+              <button class="copy-btn" data-key="tpl-hgutflytt-sv"><span class="cb-ico">&#128203;</span> Kopiera mall <span class="cb-lang">SV</span></button>
+              <button class="copy-btn" data-key="tpl-hgutflytt-en"><span class="cb-ico">&#128203;</span> Copy template <span class="cb-lang">EN</span></button>
+            </div>
+            <div class="copy-cap">Efter upps&auml;gning</div>
+            <div class="copy-row">
+              <button class="copy-btn" data-key="tpl-hgutflytt-notice-sv"><span class="cb-ico">&#128203;</span> Kopiera mall <span class="cb-lang">SV</span></button>
+              <button class="copy-btn" data-key="tpl-hgutflytt-notice-en"><span class="cb-ico">&#128203;</span> Copy template <span class="cb-lang">EN</span></button>
+            </div>
+            <div class="tpl-html" id="tpl-hgutflytt-sv-html" hidden><p>Hej,</p>
+<p>Jag hoppas att allt är bra med dig!</p>
+<p>Då ditt avresedatum närmar sig vill vi gärna koordinera din utcheckning.<br>Skulle du kunna bekräfta ditt planerade utflyttningsdatum samt ungefärlig avresetid?</p>
+<p>När vi har fått denna information skickar vi relevanta utcheckningsinstruktioner till dig och samordnar nyckelåterlämningen vid behov.</p>
+<p>Tack på förhand. Vi uppskattar ditt samarbete och hoppas att du har trivts under din vistelse hos oss.</p></div>
+            <div class="tpl-html" id="tpl-hgutflytt-en-html" hidden><p>Hello,</p>
+<p>I hope you're doing well!</p>
+<p>As your departure date is approaching, we would like to coordinate your check-out.<br>Could you please confirm your planned move-out date and approximate departure time.</p>
+<p>Once we have this information, we will send you the relevant check-out instructions and coordinate the key return if necessary.</p>
+<p>Thank you in advance. We appreciate your cooperation and hope you have enjoyed your stay with us.</p></div>
+            <script type="text/plain" id="tpl-hgutflytt-sv-txt">Hej,
+
+Jag hoppas att allt är bra med dig!
+
+Då ditt avresedatum närmar sig vill vi gärna koordinera din utcheckning.
+Skulle du kunna bekräfta ditt planerade utflyttningsdatum samt ungefärlig avresetid?
+
+När vi har fått denna information skickar vi relevanta utcheckningsinstruktioner till dig och samordnar nyckelåterlämningen vid behov.
+
+Tack på förhand. Vi uppskattar ditt samarbete och hoppas att du har trivts under din vistelse hos oss.
+</script>
+            <script type="text/plain" id="tpl-hgutflytt-en-txt">Hello,
+
+I hope you're doing well!
+
+As your departure date is approaching, we would like to coordinate your check-out.
+Could you please confirm your planned move-out date and approximate departure time.
+
+Once we have this information, we will send you the relevant check-out instructions and coordinate the key return if necessary.
+
+Thank you in advance. We appreciate your cooperation and hope you have enjoyed your stay with us.
+</script>
+            <div class="tpl-html" id="tpl-hgutflytt-notice-sv-html" hidden><p>Hej,</p>
+<p>Jag hoppas att allt är bra med dig!</p>
+<p>Vi har mottagit en uppsägning av hyresavtalet och vill nu börja samordna utflyttsprocessen.</p>
+<p>Om ditt utflyttningsdatum redan är bekräftat ber vi dig vänligen dela det planerade datumet och önskad tid för nyckelöverlämningen.</p>
+<p>Om exakt datum ännu inte är bestämt är du välkommen att återkomma med denna information närmare slutet av avtalsperioden.</p>
+<p><b>Nyckelåterlämning &amp; samordning av utflytt</b><br>Vänligen meddela oss:</p>
+<ul>
+<li>Ditt planerade utflyttningsdatum och ungefärlig tid</li>
+<li>Hur du föredrar att lämna tillbaka nycklarna</li>
+<li>Om du behöver samordning med en städare eller fastighetskontakt på plats</li>
+</ul>
+<p>Tack på förhand för ditt samarbete. Vi uppskattar din vistelse hos oss och ser fram emot att hjälpa till med en smidig och välorganiserad utcheckning.</p></div>
+            <div class="tpl-html" id="tpl-hgutflytt-notice-en-html" hidden><p>Hello,</p>
+<p>I hope you're doing well!</p>
+<p>We have received notice regarding the termination of the rental agreement, and we would now like to begin coordinating the move-out process.</p>
+<p>If your move-out date has already been confirmed, we kindly ask you to share the planned date and preferred time for the key handover.</p>
+<p>If the exact date has not yet been decided, you are welcome to return with this information closer to the end of the agreement period.</p>
+<p><b>Key return &amp; move-out coordination</b><br>Please let us know:</p>
+<ul>
+<li>Your planned move-out date and approximate time</li>
+<li>How you would prefer to return the keys</li>
+<li>If you require coordination with a cleaner or property contact on-site</li>
+</ul>
+<p>Thank you in advance for your cooperation. We appreciate your stay with us and look forward to helping ensure a smooth and well-organized check-out process.</p></div>
+            <script type="text/plain" id="tpl-hgutflytt-notice-sv-txt">Hej,
+
+Jag hoppas att allt är bra med dig!
+
+Vi har mottagit en uppsägning av hyresavtalet och vill nu börja samordna utflyttsprocessen.
+
+Om ditt utflyttningsdatum redan är bekräftat ber vi dig vänligen dela det planerade datumet och önskad tid för nyckelöverlämningen.
+
+Om exakt datum ännu inte är bestämt är du välkommen att återkomma med denna information närmare slutet av avtalsperioden.
+
+Nyckelåterlämning & samordning av utflytt
+Vänligen meddela oss:
+• Ditt planerade utflyttningsdatum och ungefärlig tid
+• Hur du föredrar att lämna tillbaka nycklarna
+• Om du behöver samordning med en städare eller fastighetskontakt på plats
+
+Tack på förhand för ditt samarbete. Vi uppskattar din vistelse hos oss och ser fram emot att hjälpa till med en smidig och välorganiserad utcheckning.
+</script>
+            <script type="text/plain" id="tpl-hgutflytt-notice-en-txt">Hello,
+
+I hope you're doing well!
+
+We have received notice regarding the termination of the rental agreement, and we would now like to begin coordinating the move-out process.
+
+If your move-out date has already been confirmed, we kindly ask you to share the planned date and preferred time for the key handover.
+
+If the exact date has not yet been decided, you are welcome to return with this information closer to the end of the agreement period.
+
+Key return & move-out coordination
+Please let us know:
+• Your planned move-out date and approximate time
+• How you would prefer to return the keys
+• If you require coordination with a cleaner or property contact on-site
+
+Thank you in advance for your cooperation. We appreciate your stay with us and look forward to helping ensure a smooth and well-organized check-out process.
+</script>
           </div>
           <div class="field">
             <span class="field-label">N&auml;r?</span>
@@ -653,6 +1070,82 @@
           <div class="field">
             <span class="field-label">Mall</span>
             <span class="mail-pill"><span class="m-ico">&#9993;</span> HV Utflytt</span>
+            <div class="copy-row">
+              <button class="copy-btn" data-key="tpl-hvutflytt-sv"><span class="cb-ico">&#128203;</span> Kopiera mall <span class="cb-lang">SV</span></button>
+              <button class="copy-btn" data-key="tpl-hvutflytt-en"><span class="cb-ico">&#128203;</span> Copy template <span class="cb-lang">EN</span></button>
+            </div>
+            <div class="tpl-html" id="tpl-hvutflytt-sv-html" hidden><p>Hej,</p>
+<p>Vi har en utflytt den [datum] på [adress] och undrar om det är något vi behöver tänka på från vår sida i samband med detta.</p>
+<p><b>[Välj ett av de två styckena nedan – ta bort markeringen och det alternativ du inte använder]</b></p>
+<p>Vi behöver samordna nyckelöverlämning om det är en sådan samt boka in städning enligt era önskemål, med en städfirma som ni själva väljer, antingen på utflyttsdagen eller nästkommande dag. Vi skulle också uppskatta om ni kan ge oss information om kostnaden för städningen. Vill ni att vi ombesörjer städfirma så gör vi självklart det.</p>
+<p><b>— eller —</b></p>
+<p>Vi behöver samordna eventuell nyckelöverlämning i samband med utflytten. Vi kan även se att slutstädning redan är överenskommen och kommer att hanteras i enlighet med avtalet.</p>
+<p>Vi vill även informera om att vid städning kommer sängkläder tyvärr inte att vara tvättade, utan de kommer därför behövas hanteras separat.</p>
+<p>Vi vill även dela länken till frånträdeskontrollen, som ska genomföras inom 72 timmar efter utflytt. Vi rekommenderar att ni gör detta i samband med er egen inspektion, då inga ytterligare anspråk kan lyftas efter att den är genomförd.</p>
+<p>🔗 <a href="https://wkf.ms/4dJc5DP">Frånträdeskontroll</a></p>
+<p>Vid eventuella skador ber vi er att både rapportera detta i frånträdeskontrollen samt skicka ett mejl till oss med en uppskattning av kostnaderna.</p>
+<p>Ser fram emot din återkoppling!</p>
+<p>Ha en fin dag!</p></div>
+            <div class="tpl-html" id="tpl-hvutflytt-en-html" hidden><p>Hi,</p>
+<p>We have a scheduled move-out on [date] at [address], and we would like to check if there is anything we need to consider from our side in relation to this.</p>
+<p><b>[Choose one of the two paragraphs below – remove this note and the option you are not using]</b></p>
+<p>We'll need to coordinate the key handover, if applicable, and also arrange cleaning according to your preferences. You are of course free to use a cleaning company of your choice, either on the day of move-out or the following day. We would also appreciate if you could inform us of the cost for the cleaning. If you prefer that we arrange the cleaning company, we're happy to take care of it.</p>
+<p><b>— or —</b></p>
+<p>We'll need to coordinate the key handover, if applicable, in connection with the move-out. We can also see that final cleaning has already been agreed and will be handled in accordance with the agreement.</p>
+<p>Please note that bed linen will not be washed during the cleaning, and will therefore need to be handled separately.</p>
+<p>We would also like to share the link to the departure inspection form, which must be completed within 72 hours after move-out. We recommend doing this at the time of your own inspection, as no further claims can be made once the form has been submitted:</p>
+<p>🔗 <a href="https://wkf.ms/3CJNUr6">Move-out inspection</a></p>
+<p>In case of any damages, please report them both in the departure form and via email to us, along with an estimated cost for repair or replacement.</p>
+<p>Looking forward to your reply!</p>
+<p>Have a great day!</p></div>
+            <script type="text/plain" id="tpl-hvutflytt-sv-txt">Hej,
+
+Vi har en utflytt den [datum] på [adress] och undrar om det är något vi behöver tänka på från vår sida i samband med detta.
+
+[Välj ett av de två styckena nedan – ta bort markeringen och det alternativ du inte använder]
+
+Vi behöver samordna nyckelöverlämning om det är en sådan samt boka in städning enligt era önskemål, med en städfirma som ni själva väljer, antingen på utflyttsdagen eller nästkommande dag. Vi skulle också uppskatta om ni kan ge oss information om kostnaden för städningen. Vill ni att vi ombesörjer städfirma så gör vi självklart det.
+
+— eller —
+
+Vi behöver samordna eventuell nyckelöverlämning i samband med utflytten. Vi kan även se att slutstädning redan är överenskommen och kommer att hanteras i enlighet med avtalet.
+
+Vi vill även informera om att vid städning kommer sängkläder tyvärr inte att vara tvättade, utan de kommer därför behövas hanteras separat.
+
+Vi vill även dela länken till frånträdeskontrollen, som ska genomföras inom 72 timmar efter utflytt. Vi rekommenderar att ni gör detta i samband med er egen inspektion, då inga ytterligare anspråk kan lyftas efter att den är genomförd.
+
+🔗 Frånträdeskontroll: https://wkf.ms/4dJc5DP
+
+Vid eventuella skador ber vi er att både rapportera detta i frånträdeskontrollen samt skicka ett mejl till oss med en uppskattning av kostnaderna.
+
+Ser fram emot din återkoppling!
+
+Ha en fin dag!
+</script>
+            <script type="text/plain" id="tpl-hvutflytt-en-txt">Hi,
+
+We have a scheduled move-out on [date] at [address], and we would like to check if there is anything we need to consider from our side in relation to this.
+
+[Choose one of the two paragraphs below – remove this note and the option you are not using]
+
+We'll need to coordinate the key handover, if applicable, and also arrange cleaning according to your preferences. You are of course free to use a cleaning company of your choice, either on the day of move-out or the following day. We would also appreciate if you could inform us of the cost for the cleaning. If you prefer that we arrange the cleaning company, we're happy to take care of it.
+
+— or —
+
+We'll need to coordinate the key handover, if applicable, in connection with the move-out. We can also see that final cleaning has already been agreed and will be handled in accordance with the agreement.
+
+Please note that bed linen will not be washed during the cleaning, and will therefore need to be handled separately.
+
+We would also like to share the link to the departure inspection form, which must be completed within 72 hours after move-out. We recommend doing this at the time of your own inspection, as no further claims can be made once the form has been submitted:
+
+🔗 Move-out inspection: https://wkf.ms/3CJNUr6
+
+In case of any damages, please report them both in the departure form and via email to us, along with an estimated cost for repair or replacement.
+
+Looking forward to your reply!
+
+Have a great day!
+</script>
           </div>
           <div class="field">
             <span class="field-label">N&auml;r?</span>
@@ -774,7 +1267,7 @@
     </div>
   </section>
 
-  <div class="foot">Nordicta Corporate Housing &middot; Inflytt &amp; Utflytt &middot; v2.1</div>
+  <div class="foot">Nordicta Corporate Housing &middot; Inflytt &amp; Utflytt &middot; v3.8</div>
 
 </div>
 
@@ -788,6 +1281,55 @@
     document.getElementById(t.dataset.tab).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }));
+</script>
+<script>
+(function(){
+  function richFallback(html){
+    return new Promise(function(res,rej){
+      var d=document.createElement('div');
+      d.setAttribute('contenteditable','true');
+      d.style.position='fixed'; d.style.left='-99999px'; d.style.top='0'; d.style.whiteSpace='pre-wrap';
+      d.innerHTML=html;
+      document.body.appendChild(d);
+      var range=document.createRange(); range.selectNodeContents(d);
+      var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+      sel.removeAllRanges(); document.body.removeChild(d);
+      if(ok){ res(); } else { rej(new Error('copy failed')); }
+    });
+  }
+  function copyRich(html, plain){
+    if(navigator.clipboard && window.ClipboardItem && window.isSecureContext){
+      try{
+        var item=new ClipboardItem({
+          'text/html': new Blob([html], {type:'text/html'}),
+          'text/plain': new Blob([plain], {type:'text/plain'})
+        });
+        return navigator.clipboard.write([item]).catch(function(){ return richFallback(html); });
+      }catch(e){ return richFallback(html); }
+    }
+    return richFallback(html);
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    var orig=btn.innerHTML;
+    btn.addEventListener('click',function(){
+      var key=btn.getAttribute('data-key');
+      var htmlEl=document.getElementById(key+'-html');
+      var txtEl=document.getElementById(key+'-txt');
+      if(!htmlEl) return;
+      var html=htmlEl.innerHTML;
+      var plain=txtEl ? txtEl.textContent.replace(/^\s*\n/,'').replace(/\s+$/,'') : htmlEl.textContent;
+      copyRich(html, plain).then(function(){
+        btn.classList.add('copied');
+        btn.innerHTML='<span class="cb-ico">&#10003;</span> Kopierad!';
+        setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML=orig; },1800);
+      }).catch(function(){
+        btn.innerHTML='<span class="cb-ico">&#9888;</span> Kunde inte kopiera';
+        setTimeout(function(){ btn.innerHTML=orig; },2200);
+      });
+    });
+  });
+})();
 </script>
 </body>
 </html>

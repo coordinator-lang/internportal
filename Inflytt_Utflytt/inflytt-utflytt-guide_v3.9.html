@@ -1267,7 +1267,7 @@ Have a great day!
     </div>
   </section>
 
-  <div class="foot">Nordicta Corporate Housing &middot; Inflytt &amp; Utflytt &middot; v3.8</div>
+  <div class="foot">Nordicta Corporate Housing &middot; Inflytt &amp; Utflytt &middot; v3.9</div>
 
 </div>
 
@@ -1317,7 +1317,7 @@ Have a great day!
       var htmlEl=document.getElementById(key+'-html');
       var txtEl=document.getElementById(key+'-txt');
       if(!htmlEl) return;
-      var html=htmlEl.innerHTML;
+      var html=(function(){var c=htmlEl.cloneNode(true);if(c.firstElementChild){c.firstElementChild.style.marginTop='0';}if(c.lastElementChild){c.lastElementChild.style.marginBottom='0';}return c.innerHTML;})();
       var plain=txtEl ? txtEl.textContent.replace(/^\s*\n/,'').replace(/\s+$/,'') : htmlEl.textContent;
       copyRich(html, plain).then(function(){
         btn.classList.add('copied');

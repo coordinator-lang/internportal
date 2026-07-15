@@ -146,10 +146,10 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v1.2 | + Moms-sektion: Forenom-tabell (boende/tjänste-moms per land) + allmän tabell över moms på bostadsuthyrning för 12 länder (verifierat via webbsök juni 2026). Övriga fält fortf. platshållare. | Liten |
 
 ### Bostadskalkylator
-Hostad **oförändrad** från användarens egen versionerade fil. Versionshanteras
-separat. Har portal-headern men saknar "Startsidan"-länk — loggan är inte heller en
-hemlänk. Kan läggas till vid behov (loggan → hemlänk är osynlig i PDF; en synlig
-back-knapp måste döljas i `@media print`).
+Hostad från användarens egen versionerade fil (senast **v3.4**). Versionshanteras
+separat. Har portal-headern med **"← Internportal"-länk** (uppe till vänster) och
+**klickbar logga** som länkar hem till `../index.html` — båda dolda i `@media print`
+så PDF-exporten förblir ren (tillagt i v3.4).
 
 **PERMANENT LÄNK (viktigt):** Kalkylatorn nås alltid via den stabila URL:en
 `Bostadskalkylator/bostadskalkylator.html` — det är den som ska delas och bokmärkas.

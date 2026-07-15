@@ -1,2 +1,5 @@
 # Local Claude Code tooling (preview server config etc.)
 .claude/
+
+# Interna handover-/arbetsdokument — ska INTE publiceras på GitHub Pages
+HANDOVER*.md

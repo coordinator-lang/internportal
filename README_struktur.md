@@ -51,6 +51,7 @@ Nordicta Internal Website/
 │   └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
 │
 ├── Bostadskalkylator/
+│   ├── bostadskalkylator.html           ← PERMANENT LÄNK (dela/bokmärk denna) – redirect till aktuell version
 │   └── bostadskalkylator_v3.3.html      ← internt prisverktyg, hostad oförändrad (versionshanteras separat av användaren)
 │
 ├── Inflytt_Utflytt/
@@ -146,10 +147,20 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v1.2 | + Moms-sektion: Forenom-tabell (boende/tjänste-moms per land) + allmän tabell över moms på bostadsuthyrning för 12 länder (verifierat via webbsök juni 2026). Övriga fält fortf. platshållare. | Liten |
 
 ### Bostadskalkylator
-Hostad **oförändrad** från användarens egen versionerade fil (v3.1). Versionshanteras
-separat (egen redirect-index i källmappen). Har portal-headern men saknar
-"Startsidan"-länk — loggan är inte heller en hemlänk. Kan läggas till som v3.2 vid behov
-(loggan → hemlänk är osynlig i PDF; en synlig back-knapp måste döljas i `@media print`).
+Hostad **oförändrad** från användarens egen versionerade fil. Versionshanteras
+separat. Har portal-headern men saknar "Startsidan"-länk — loggan är inte heller en
+hemlänk. Kan läggas till vid behov (loggan → hemlänk är osynlig i PDF; en synlig
+back-knapp måste döljas i `@media print`).
+
+**PERMANENT LÄNK (viktigt):** Kalkylatorn nås alltid via den stabila URL:en
+`Bostadskalkylator/bostadskalkylator.html` — det är den som ska delas och bokmärkas.
+Den är en liten redirect-sida som pekar vidare till den aktuella versionerade filen.
+Index-kortet länkar till den, inte till den versionerade filen direkt.
+
+**Rutin vid ny version:** lägg in den nya `bostadskalkylator_vX.Y.html` i mappen och
+ändra filnamnet på **två ställen** i `bostadskalkylator.html` (raden `<meta refresh>`
+och JS-konstanten `TARGET`). Rör INTE index-kortet — den permanenta länken gör att
+gamla bokmärken aldrig 404:ar.
 
 ### Versionshistorik – index (startsidan)
 Index versioneras genom arkiverade kopior i roten (`index_v1.0.html`, `index_v1.1.html` etc.).

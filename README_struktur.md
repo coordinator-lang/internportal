@@ -51,8 +51,7 @@ Nordicta Internal Website/
 │   └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
 │
 ├── Bostadskalkylator/
-│   ├── bostadskalkylator.html           ← PERMANENT LÄNK (dela/bokmärk denna) – redirect till aktuell version
-│   └── bostadskalkylator_v3.3.html      ← internt prisverktyg, hostad oförändrad (versionshanteras separat av användaren)
+│   └── bostadskalkylator.html           ← PERMANENT LÄNK + själva kalkylatorn (stabilt filnamn, skrivs över vid ny version)
 │
 ├── Inflytt_Utflytt/
 │   └── inflytt-utflytt-guide_v3.9.html  ← workflow-guide för in-/utflytt, hostad oförändrad (har egen "← Internportal"-länk; versionshanteras separat)
@@ -154,13 +153,13 @@ back-knapp måste döljas i `@media print`).
 
 **PERMANENT LÄNK (viktigt):** Kalkylatorn nås alltid via den stabila URL:en
 `Bostadskalkylator/bostadskalkylator.html` — det är den som ska delas och bokmärkas.
-Den är en liten redirect-sida som pekar vidare till den aktuella versionerade filen.
-Index-kortet länkar till den, inte till den versionerade filen direkt.
+Själva kalkylatorn ligger PÅ det stabila filnamnet (ingen redirect), så adressfältet
+förblir stabilt och gamla bokmärken 404:ar aldrig.
 
-**Rutin vid ny version:** lägg in den nya `bostadskalkylator_vX.Y.html` i mappen och
-ändra filnamnet på **två ställen** i `bostadskalkylator.html` (raden `<meta refresh>`
-och JS-konstanten `TARGET`). Rör INTE index-kortet — den permanenta länken gör att
-gamla bokmärken aldrig 404:ar.
+**Rutin vid ny version:** skriv bara över `bostadskalkylator.html` med innehållet från
+den nya versionerade filen → commit/push. Rör INTE filnamnet eller index-kortet.
+Versionsarkiv behövs inte i repot — git-historiken + användarens källmapp
+(`Nordicta bostadskalkylator\`) bevarar alla versioner.
 
 ### Versionshistorik – index (startsidan)
 Index versioneras genom arkiverade kopior i roten (`index_v1.0.html`, `index_v1.1.html` etc.).

@@ -59,7 +59,9 @@ Nordicta Internal Website/
 │
 └── SOP/
     ├── sop_v1.0.html                    ← arkiv
-    └── sop_v1.1.html                    ← sökbar SOP 2026, portal-stil m. "← Internportal"-länk  ← AKTUELL
+    ├── sop_v1.1.html                    ← arkiv
+    ├── sop_v1.2.html                    ← sökbar SOP 2026, portal-stil, emoji-fri (nummer-badges/glyf-cirklar/SVG-lupp)  ← AKTUELL
+    └── sop-alt_v1.0.html                ← ALTERNATIV stilvariant i formulärens husstil (lila/guld/DM Sans) — samma innehåll, EJ länkad från index
 ```
 
 > **OBS – Hyresvardsformular/ är MEDVETET INTE länkad** från index eller någon

@@ -77,6 +77,21 @@
 
   /* ─── FOOTER ─── */
   .footer { text-align:center; padding:24px 16px; color:#cbd5e1; font-size:12px; font-family:'IBM Plex Mono',monospace; border-top:1px solid #e2e8f0; }
+
+  /* ─── FAKTURERINGSUPPGIFTER ─── */
+  .billing { display:flex; flex-wrap:wrap; gap:18px; margin-bottom:12px; }
+  .billing-card { flex:1 1 320px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:20px 22px; }
+  .billing-card h3 { font-size:12px; font-family:'IBM Plex Mono',monospace; letter-spacing:1.5px; text-transform:uppercase; color:#64748b; font-weight:600; margin-bottom:14px; }
+  .billing-lines { font-family:'IBM Plex Mono',monospace; font-size:14px; line-height:1.7; color:#0f172a; white-space:pre-line; }
+  .billing-lines .org { color:#64748b; }
+  .billing-mail-note { font-size:13px; color:#64748b; margin-bottom:8px; }
+  .billing-mail { font-family:'IBM Plex Mono',monospace; font-size:14px; color:#0f172a; word-break:break-all; }
+  .copy-btn { display:inline-flex; align-items:center; gap:7px; margin-top:16px; padding:9px 16px; background:#1a1a2e; color:#fff; border:none; border-radius:8px; font-family:'IBM Plex Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:background .15s; }
+  .copy-btn:hover { background:#f97316; }
+  .copy-btn.copied { background:#16a34a; }
+  .copy-btn svg { width:15px; height:15px; flex-shrink:0; }
+  .copy-all { margin-top:4px; background:#f97316; }
+  .copy-all:hover { background:#1a1a2e; }
 </style>
 </head>
 <body>
@@ -106,6 +121,42 @@
     Momssatserna nedan är hämtade via webbsök (juni 2026); landöversiktens övriga fält är ännu
     platshållare. Bekräfta alltid mot officiell källa. Detta är inte juridisk eller skatterådgivning.
   </div>
+
+  <!-- FAKTURERINGSUPPGIFTER -->
+  <h2 class="section-title" id="fakturering">Nordictas faktureringsuppgifter</h2>
+  <p class="section-sub">Nordictas egna uppgifter — att lämna till leverantörer och för inkommande fakturor. Tryck <strong>Kopiera</strong> för att klistra in dem var som helst.</p>
+  <div class="billing">
+
+    <div class="billing-card">
+      <h3>Fakturaadress</h3>
+      <div class="billing-lines" id="billing-address">Nordicta AB
+<span class="org">Org.nr 559173-0386</span>
+c/o Kontorshotellet
+Cylindervägen 18
+Box 1113
+131 26 Nacka Strand</div>
+      <button class="copy-btn" data-copy="#billing-address" data-label="Kopiera faktureringsadress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Kopiera faktureringsadress</span>
+      </button>
+    </div>
+
+    <div class="billing-card">
+      <h3>Fakturor till Nordicta</h3>
+      <p class="billing-mail-note">Fakturor mejlas i PDF till:</p>
+      <div class="billing-mail" id="billing-email">inbox.lev.1324422@arkivplats.se</div>
+      <button class="copy-btn" data-copy="#billing-email" data-label="Kopiera e-postadress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Kopiera e-postadress</span>
+      </button>
+    </div>
+
+  </div>
+
+  <button class="copy-btn copy-all" data-copy="all" data-label="Kopiera alla uppgifter (adress + fakturamejl)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    <span>Kopiera alla uppgifter (adress + fakturamejl)</span>
+  </button>
 
   <!-- MOMS / VAT -->
   <h2 class="section-title" id="vat">Moms vid uthyrning (VAT)</h2>
@@ -274,6 +325,34 @@
 </div>
 
 <script>
+// Kopiera-knappar (faktureringsuppgifter)
+function billingText(kind) {
+  const addr = document.getElementById('billing-address').innerText.trim();
+  const note = document.querySelector('.billing-mail-note').innerText.trim();
+  const email = document.getElementById('billing-email').innerText.trim();
+  if (kind === '#billing-address') return addr;
+  if (kind === '#billing-email') return email;
+  return addr + '\n\n' + note + '\n' + email; // "all"
+}
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const text = billingText(btn.dataset.copy);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+    }
+    const label = btn.querySelector('span');
+    btn.classList.add('copied');
+    label.textContent = 'Kopierat!';
+    setTimeout(() => { btn.classList.remove('copied'); label.textContent = btn.dataset.label; }, 1600);
+  });
+});
+
 // Accordion toggle
 document.querySelectorAll('.acc-head').forEach(h => {
   h.addEventListener('click', () => h.closest('.acc').classList.toggle('open'));

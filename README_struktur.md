@@ -45,9 +45,7 @@ Nordicta Internal Website/
 │   └── forslag-viewer_v1.4.html ← länkar till form v1.4  ← AKTUELL
 │
 ├── Anvandbar_information/
-│   ├── anvandbar-information_v1.1.html  ← referenssida i portal-stil (platshållare)
-│   ├── anvandbar-information_v1.2.html  ← + moms-sektion (Forenom + bostadsuthyrning per land)
-│   └── anvandbar-information_v1.3.html  ← + Nordictas faktureringsuppgifter m. kopiera-knappar  ← AKTUELL
+│   └── anvandbar-information.html       ← STABILT FILNAMN (permanent länk, aldrig 404) — skrivs över vid ny version; git = arkiv
 │
 ├── Hyresvardsformular/
 │   └── hyresvardsformular_v43.html      ← fristående hyresvärdsformulär (postar till Make-webhook)
@@ -150,6 +148,7 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v1.1 | Referenssidans innehåll inlagt i portal-mallen (unified header/footer, portal-CSS). Alla tax/lag-värden är [PLATSHÅLLARE] tills en ägare fyller i från officiell källa. | – |
 | v1.2 | + Moms-sektion: Forenom-tabell (boende/tjänste-moms per land) + allmän tabell över moms på bostadsuthyrning för 12 länder (verifierat via webbsök juni 2026). Övriga fält fortf. platshållare. | Liten |
 | v1.3 | + Sektion "Nordictas faktureringsuppgifter" högst upp (fakturaadress + fakturamejl inbox.lev.1324422@arkivplats.se) med kopiera-knappar (clipboard API + execCommand-fallback). | Liten |
+| v1.4 | + tredje knapp "Kopiera alla uppgifter" (adress + fakturamejl i ett). **Sidan flyttad till STABILT filnamn `anvandbar-information.html`** (inga versionsnummer i URL → aldrig 404 vid uppdatering). Gamla versionerade filer borttagna; git-historien = arkiv. Rutin: skriv över `anvandbar-information.html`, bumpa bara denna tabell. | Liten |
 
 ### Bostadskalkylator
 Hostad från användarens egen versionerade fil (senast **v3.4**). Versionshanteras

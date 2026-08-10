@@ -160,6 +160,11 @@
       <div class="file-list" id="fileList"></div>
     </div>
 
+    <label style="display:flex; align-items:center; gap:9px; margin-top:14px; font-size:13px; cursor:pointer;">
+      <input type="checkbox" id="readImages" style="width:auto;">
+      <span>Läs även av bilderna för bekvämligheter <span class="mono-help">(tar längre tid — AI:n tittar på annonsens foton)</span></span>
+    </label>
+
     <div class="actions" style="margin-top:16px">
       <button type="button" class="btn btn-primary" id="btnAI">Läs in med AI →</button>
       <button type="button" class="btn btn-ghost btn-sm" id="btnManual">Fyll i för hand</button>
@@ -410,15 +415,18 @@ const aiStatus = document.getElementById('aiStatus');
 document.getElementById('btnAI').addEventListener('click', async ()=>{
   const url = document.getElementById('url').value.trim();
   const instruction = document.getElementById('aiInstruction').value.trim();
+  const readImages = document.getElementById('readImages').checked;
   if(!url && !instruction){ aiStatus.textContent='Ange en länk (eller extra info) först.'; return; }
-  const btn=document.getElementById('btnAI'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Läser…'; aiStatus.textContent='';
+  const btn=document.getElementById('btnAI'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span>'+(readImages?'Läser text + bilder…':'Läser…'); aiStatus.textContent='';
   try{
-    const r = await fetch(`${CFG.fnBase}/${CFG.extractFn}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ url, instruction }) });
+    const r = await fetch(`${CFG.fnBase}/${CFG.extractFn}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ url, instruction, read_images: readImages }) });
     const j = await r.json();
     if(!r.ok || j.error){ throw new Error(typeof j.error==='object'?JSON.stringify(j.error):(j.error||('HTTP '+r.status))); }
     prefillFromObject(j.data || {});
     showReview();
-    document.getElementById('reviewBanner').textContent = `AI:n (${j.model||'Claude'}) fyllde i fälten. Granska och rätta innan import — särskilt hyra, bäddset och att inga fel bilder kom med.`;
+    let msg = `AI:n (${j.model||'Claude'}) fyllde i fälten. Granska och rätta innan import — särskilt hyra, bäddset och att inga fel bilder kom med.`;
+    if(j.vision){ msg += (j.vision.added && j.vision.added.length) ? ` Från bilderna lades till: ${j.vision.added.join(', ')}.` : ' Bilderna gav inga extra bekvämligheter.'; }
+    document.getElementById('reviewBanner').textContent = msg;
     document.getElementById('reviewSection').scrollIntoView({behavior:'smooth', block:'start'});
   }catch(e){ aiStatus.textContent = 'Fel: '+e.message; }
   finally{ btn.disabled=false; btn.textContent='Läs in med AI →'; }
@@ -530,6 +538,7 @@ document.getElementById('btnClear').addEventListener('click',()=>{
   if(confirm('Rensa allt?')){
     document.getElementById('form').reset(); document.getElementById('aiJson').value='';
     document.getElementById('url').value=''; document.getElementById('aiInstruction').value='';
+    document.getElementById('readImages').checked=false;
     utilAll.checked=true; utilDetail.classList.add('hidden');
     currentFiles=[]; renderFiles(); updateCount(); resultEl.innerHTML='';
     setReviewVisible(false);

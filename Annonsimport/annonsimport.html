@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nordicta – Annonsimport</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f1f5f9; --ink: #1e293b; --ink-strong: #0f172a; --muted: #64748b;
+    --mono-muted: #94a3b8; --navy: #1a1a2e; --accent: #f97316; --accent-dark:#ea580c;
+    --border: #e2e8f0; --green: #10b981; --red:#ef4444; --card:#ffffff;
+  }
+  body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+  header { background: var(--navy); color:#fff; padding: 32px 24px 28px; position: relative; overflow:hidden; border-bottom: 3px solid var(--accent); }
+  header::before { content:''; position:absolute; top:-60px; right:-40px; width:280px; height:280px; border-radius:50%; background:rgba(255,255,255,.04); }
+  header::after { content:''; position:absolute; bottom:-80px; right:120px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,.03); }
+  .header-inner { max-width: 860px; margin:0 auto; position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; }
+  .header-tag { font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--mono-muted); }
+  .header-inner h1 { font-family:Georgia, serif; font-size:28px; font-weight:700; color:#fff; letter-spacing:-.3px; }
+  .header-inner p { color:#8888aa; font-size:13px; margin-top:2px; max-width:600px; line-height:1.5; }
+  .back-link { position:absolute; top:22px; left:24px; z-index:2; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--mono-muted); text-decoration:none; transition:color .18s; }
+  .back-link:hover { color:#fff; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 26px 16px 80px; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 20px 22px; margin-bottom:18px; box-shadow:0 1px 2px rgba(15,23,42,.03); }
+  .card > h2 { font-family:Georgia, serif; font-size:17px; color:var(--ink-strong); margin-bottom:2px; display:flex; align-items:center; gap:9px; }
+  .card > h2 .num { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; color:#fff; background:var(--navy); width:24px; height:24px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; }
+  .card > .hint { font-size:12px; color:var(--muted); margin:4px 0 16px 33px; }
+
+  .lead { background:linear-gradient(180deg,#fffaf5,#fff); border:1px solid #fed7aa; }
+  .lead > h2 .num { background:var(--accent); }
+
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px 16px; }
+  .grid.three { grid-template-columns:repeat(3,1fr); }
+  .field { display:flex; flex-direction:column; gap:5px; }
+  .field.full { grid-column:1 / -1; }
+  label { font-size:12px; font-weight:600; color:var(--ink); letter-spacing:.2px; }
+  label .opt { color:var(--mono-muted); font-weight:400; }
+  input, select, textarea { font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--ink); background:#fff; border:1px solid var(--border); border-radius:8px; padding:9px 11px; transition:border-color .15s, box-shadow .15s; width:100%; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(249,115,22,.12); }
+  textarea { resize:vertical; min-height:70px; line-height:1.5; }
+  textarea.code { font-family:'IBM Plex Mono',monospace; font-size:12.5px; }
+  .mono-help { font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--mono-muted); }
+
+  .util-toggle { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:14px; cursor:pointer; }
+  .util-toggle input { width:auto; }
+  .util-toggle span { font-size:13px; font-weight:600; }
+  .util-toggle small { color:var(--muted); font-weight:400; }
+  #utilDetail.hidden { display:none; }
+  .util-row { display:grid; grid-template-columns:110px 1fr 120px; gap:10px; align-items:center; margin-bottom:9px; }
+  .util-row > .uname { font-size:13px; font-weight:600; }
+  .util-row .amt.hidden { visibility:hidden; }
+
+  .dropzone { border:2px dashed var(--border); border-radius:10px; padding:22px 18px; text-align:center; cursor:pointer; transition:border-color .15s, background .15s; background:#fbfcfe; }
+  .dropzone:hover { border-color:var(--accent); background:#fff8f2; }
+  .dropzone.over { border-color:var(--accent); background:#fff2e8; }
+  .dropzone .dz-icon { font-size:24px; }
+  .dropzone .dz-main { font-size:14px; font-weight:600; margin-top:4px; }
+  .dropzone .dz-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .file-list { margin-top:14px; }
+  .file-list .file-reorder-hint { margin-bottom:8px; font-size:12.5px; color:var(--muted); }
+  .file-list .file-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background:#fff; border:1px solid var(--border); margin-bottom:6px; cursor:grab; transition:box-shadow .15s, border-color .15s, background .15s; }
+  .file-list .file-item:last-child { margin-bottom:0; }
+  .file-list .file-drag { flex-shrink:0; cursor:grab; color:var(--mono-muted); font-size:15px; letter-spacing:-3px; user-select:none; }
+  .file-list .file-thumb { flex-shrink:0; width:34px; height:34px; object-fit:cover; border-radius:6px; border:1px solid var(--border); background:#f1f5f9; }
+  .file-list .file-name { flex:1; min-width:0; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .file-list .file-order { flex-shrink:0; display:flex; flex-direction:column; gap:3px; }
+  .file-list .file-order button { width:24px; height:20px; padding:0; border-radius:5px; background:transparent; color:var(--muted); border:1px solid var(--border); font-size:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .file-list .file-order button:hover:not(:disabled){ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .file-list .file-order button:disabled { opacity:.3; cursor:default; }
+  .file-list .file-remove { flex-shrink:0; width:26px; height:26px; border-radius:50%; background:transparent; color:var(--muted); border:1px solid var(--border); font-size:18px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .file-list .file-remove:hover { background:var(--red); color:#fff; border-color:var(--red); }
+  .file-list .file-item.dragging { opacity:.45; cursor:grabbing; }
+  .file-list .file-item.drag-over { border-color:var(--accent); box-shadow:0 0 0 2px rgba(249,115,22,.15); }
+  @media (hover:hover) and (pointer:fine){ .file-list .file-item:hover { border-color:#cbd5e1; box-shadow:0 2px 8px rgba(15,23,42,.07); } }
+  @keyframes file-moved-flash { from { background:#fff2e8; } to { background:#fff; } }
+  .file-list .file-item.moved { animation:file-moved-flash .55s ease; }
+  @media (pointer:coarse){ .file-list .file-drag{display:none;} .file-list .file-order{gap:5px;} .file-list .file-order button{width:42px;height:30px;font-size:12px;} .file-list .file-remove{width:34px;height:34px;} }
+
+  .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:4px; align-items:center; }
+  button.btn { font-family:'IBM Plex Sans',sans-serif; font-size:14px; font-weight:600; border:none; border-radius:9px; padding:12px 22px; cursor:pointer; transition:transform .08s, background .15s; }
+  button.btn:active { transform:translateY(1px); }
+  button.btn:disabled { opacity:.55; cursor:not-allowed; }
+  .btn-primary { background:var(--accent); color:#fff; box-shadow:0 2px 8px rgba(249,115,22,.28); }
+  .btn-primary:hover:not(:disabled){ background:var(--accent-dark); }
+  .btn-ghost { background:#fff; color:var(--ink); border:1px solid var(--border); }
+  .btn-ghost:hover:not(:disabled){ border-color:var(--muted); }
+  .btn-text { background:none; color:var(--muted); padding:12px 8px; }
+  .btn-text:hover { color:var(--red); }
+  .btn-sm { padding:9px 16px; font-size:13px; }
+  .spinner { width:15px; height:15px; border:2px solid rgba(255,255,255,.5); border-top-color:#fff; border-radius:50%; display:inline-block; vertical-align:-2px; margin-right:7px; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  #reviewSection.hidden { display:none; }
+  .review-banner { background:#ecfdf5; border:1px solid #a7f3d0; color:#047857; border-radius:10px; padding:11px 14px; font-size:13px; margin-bottom:16px; }
+
+  #result { margin-top:22px; }
+  .result-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .result-card h3 { font-family:Georgia,serif; font-size:16px; margin-bottom:12px; color:var(--ink-strong); }
+  .status-line { display:flex; align-items:center; gap:9px; font-size:13px; padding:6px 0; border-bottom:1px dashed var(--border); }
+  .status-line:last-child { border-bottom:none; }
+  .dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+  .dot.ok{ background:var(--green);} .dot.err{ background:var(--red);} .dot.run{ background:var(--accent); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  .item-link { display:inline-block; margin-top:6px; font-weight:600; color:var(--accent-dark); text-decoration:none; }
+  .item-link:hover { text-decoration:underline; }
+  pre.payload { background:#0f172a; color:#cbd5e1; font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.55; padding:14px; border-radius:8px; overflow:auto; max-height:340px; margin-top:12px; }
+  .banner { padding:11px 14px; border-radius:8px; font-size:13px; margin-bottom:14px; }
+  .banner.err { background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; }
+  .banner.ok { background:#ecfdf5; border:1px solid #a7f3d0; color:#047857; }
+  .progressbar { height:8px; background:var(--border); border-radius:20px; overflow:hidden; margin:8px 0 14px; }
+  .progressbar > i { display:block; height:100%; width:0; background:var(--accent); transition:width .25s; }
+
+  details.adv { margin-top:6px; }
+  details.adv summary { cursor:pointer; font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; }
+
+  @media (max-width:640px){
+    .grid, .grid.three { grid-template-columns:1fr; }
+    .util-row { grid-template-columns:90px 1fr; }
+    .util-row .amt { grid-column:2; }
+    .header-inner h1 { font-size:23px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a href="https://coordinator-lang.github.io/internportal/" class="back-link">← Internportal</a>
+  <div class="header-inner">
+    <div class="header-tag">Nordicta · Verktyg</div>
+    <h1>Annonsimport</h1>
+    <p>Klistra in en annonslänk, lägg till bilder och eventuell extra info — AI:n läser annonsen och fyller i. Granska och importera till <strong>HV&nbsp;-&nbsp;Databas</strong>.</p>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- LÄS IN -->
+  <div class="card lead">
+    <h2><span class="num">1</span> Läs in annonsen</h2>
+    <p class="hint">Klistra in en länk. Lägg gärna till extra info AI:n inte kan se (telefonnummer, exakt adress) eller en särskild instruktion. Bilder kan läggas till här eller hämtas från annonsen.</p>
+    <div class="grid">
+      <div class="field full"><label>Annonslänk</label><input id="url" placeholder="https://qasa.com/… · airbnb.com/… · forenom.com/…"></div>
+      <div class="field full"><label>Extra info / särskild instruktion till AI:n <span class="opt">(valfritt)</span></label>
+        <textarea id="aiInstruction" placeholder="T.ex: Telefon 070-123 45 67. Nattpris, ingen månadshyra. Forenom → allt ingår."></textarea>
+      </div>
+    </div>
+
+    <div class="field full" style="margin-top:14px">
+      <label>Bilder <span class="opt">(dra in filer, eller låt AI:n hämta från annonsen)</span></label>
+      <div class="dropzone" id="dropZone">
+        <div class="dz-icon">🖼️</div>
+        <div class="dz-main">Dra in bilder här, eller klicka för att välja</div>
+        <div class="dz-sub">JPG/PNG · komprimeras automatiskt · max 40 st</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+      <div class="file-list" id="fileList"></div>
+    </div>
+
+    <div class="actions" style="margin-top:16px">
+      <button type="button" class="btn btn-primary" id="btnAI">Läs in med AI →</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="btnManual">Fyll i för hand</button>
+      <span id="aiStatus" class="mono-help"></span>
+    </div>
+
+    <details class="adv">
+      <summary>Avancerat: klistra in JSON (test/utan AI)</summary>
+      <div class="field full" style="margin-top:10px">
+        <textarea id="aiJson" class="code" style="min-height:90px" placeholder='{ "name": "...", "address": "...", "gallery": ["https://..."] }'></textarea>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btnFill" style="margin-top:8px">Fyll i från JSON</button>
+    </details>
+  </div>
+
+  <!-- GRANSKNING -->
+  <form id="form" autocomplete="off">
+    <div id="reviewSection" class="hidden">
+      <div class="review-banner" id="reviewBanner">Granska uppgifterna nedan innan du importerar. Rätta det som blivit fel.</div>
+
+      <div class="card">
+        <h2><span class="num">2</span> Värd &amp; kontakt</h2>
+        <div class="grid">
+          <div class="field"><label>Namn (kontaktperson)</label><input name="name"></div>
+          <div class="field"><label>Värdtyp</label>
+            <select name="landlord_type"><option value="private">Privat</option><option value="company">Företag</option><option value="agent">Förmedlare / agent</option></select>
+          </div>
+          <div class="field"><label>Företag <span class="opt">(om företag)</span></label><input name="company"></div>
+          <div class="field"><label>Telefon <span class="opt">(siffror)</span></label><input name="phone"><span class="mono-help">Tomt → fylls med 0000000</span></div>
+          <div class="field"><label>E-post</label><input name="email" type="email"></div>
+          <div class="field"><label>Land (ISO-2)</label><input name="country_iso" maxlength="2" style="text-transform:uppercase"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">3</span> Plats</h2>
+        <p class="hint">Adressen geokodas automatiskt. Fyll i lat/lng bara om geokod misslyckas.</p>
+        <div class="grid">
+          <div class="field full"><label>Adress</label><input name="address"></div>
+          <div class="field"><label>Ort</label><input name="city"></div>
+          <div class="field"><label>Land</label><input name="country"></div>
+          <div class="field"><label>Lat <span class="opt">(valfritt)</span></label><input name="lat" placeholder="auto"></div>
+          <div class="field"><label>Lng <span class="opt">(valfritt)</span></label><input name="lng" placeholder="auto"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">4</span> Objektet</h2>
+        <div class="grid three">
+          <div class="field"><label>Bostadstyp</label>
+            <select name="property_type"><option value="apartment">Lägenhet</option><option value="villa">Villa</option><option value="townhouse">Radhus</option></select>
+          </div>
+          <div class="field"><label>Möblering</label>
+            <select name="furnished"><option value="furnished">Möblerad</option><option value="partially_furnished">Delvis möblerad</option><option value="unfurnished">Omöblerad</option></select>
+          </div>
+          <div class="field"><label>Storlek (m²)</label><input name="size"></div>
+          <div class="field"><label>Sovrum</label><input name="bedrooms"></div>
+          <div class="field"><label>Bäddplatser</label><input name="bed_places"></div>
+          <div class="field"><label>Badrum</label><input name="bathrooms"></div>
+          <div class="field"><label>Duschar</label><input name="showers"></div>
+          <div class="field"><label>Månadshyra <span class="opt">(tom om nattpris ej omräknat)</span></label><input name="rent_amount"></div>
+          <div class="field"><label>Valuta</label>
+            <select name="rent_currency"><option value="SEK">SEK</option><option value="EUR">EUR</option><option value="DKK">DKK</option><option value="NOK">NOK</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">5</span> Bäddset</h2>
+        <div class="grid">
+          <div class="field"><label>Täcke</label><select name="bed_duvet" class="bedset"></select></div>
+          <div class="field"><label>Kudde</label><select name="bed_pillow" class="bedset"></select></div>
+          <div class="field"><label>Lakan</label><select name="bed_sheets" class="bedset"></select></div>
+          <div class="field"><label>Handdukar</label><select name="bed_towels" class="bedset"></select></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">6</span> Bekvämligheter &amp; parkering</h2>
+        <div class="grid">
+          <div class="field full"><label>Bekvämligheter (svenska)</label><textarea name="amenities_sv"></textarea></div>
+          <div class="field full"><label>Amenities (engelska)</label><textarea name="amenities_en"></textarea></div>
+          <div class="field"><label>Parkering (SV)</label><input name="parking_label_sv"></div>
+          <div class="field"><label>Parkering (EN)</label><input name="parking_label_en"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">7</span> Driftkostnader</h2>
+        <label class="util-toggle"><input type="checkbox" id="utilAll" checked><span>Allt ingår (varmhyra) <small>— el, värme, internet &amp; vatten</small></span></label>
+        <div id="utilDetail" class="hidden"><p class="hint" style="margin-left:0">Status per kostnad. “Delvis” visar ett belopp-fält.</p><div id="utilRows"></div></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">8</span> Övrig info &amp; bildlänkar</h2>
+        <div class="grid">
+          <div class="field full"><label>Övrig info <span class="opt">(hamnar i Monday)</span></label><textarea name="extra_info" style="min-height:90px"></textarea></div>
+          <div class="field full"><label>Bildlänkar från annonsen <span class="opt" id="photoCount">(0 länkar)</span></label><textarea name="gallery" id="gallery" style="min-height:80px" placeholder="En https-länk per rad"></textarea></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" id="btnPreview">Förhandsgranska</button>
+        <button type="submit" class="btn btn-primary" id="btnImport">Importera till Monday →</button>
+        <button type="button" class="btn btn-text" id="btnClear">Rensa allt</button>
+      </div>
+    </div>
+  </form>
+
+  <div id="result"></div>
+</div>
+
+<script>
+/* ── Konfiguration ─────────────────────────────────────────────────────── */
+const CFG = {
+  fnBase:    'https://ruznxfmqarwlkyntxliq.supabase.co/functions/v1',
+  extractFn: 'extract-listing',
+  createFn:  'create-listing-item',
+  photoUrlFn:'import-photo-url',
+  fileFn:    'upload-landlord-photo',
+  columnId:  'filer',
+  itemUrl:   id => `https://nordicta.monday.com/boards/1453497707/pulses/${id}`
+};
+const MAX_PHOTOS = 40;
+
+/* ── Bäddset & driftkostnader ──────────────────────────────────────────── */
+const BED = [['included','Ingår'],['extra_cost','Mot tillägg'],['not_included','Ingår ej']];
+document.querySelectorAll('select.bedset').forEach(sel=> BED.forEach(([v,t])=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; sel.appendChild(o); }));
+const UTILS = [['electricity','El'],['heating','Värme'],['internet','Internet'],['water','Vatten']];
+const UST   = [['included','Ingår'],['partial','Delvis'],['not_included','Ingår ej']];
+const utilRows = document.getElementById('utilRows');
+UTILS.forEach(([key,name])=>{
+  const row=document.createElement('div'); row.className='util-row';
+  const sel=document.createElement('select'); sel.dataset.util=key;
+  UST.forEach(([v,t])=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; sel.appendChild(o); });
+  const amt=document.createElement('input'); amt.className='amt hidden'; amt.placeholder='belopp'; amt.dataset.amt=key;
+  sel.addEventListener('change',()=> amt.classList.toggle('hidden', sel.value!=='partial'));
+  const lab=document.createElement('div'); lab.className='uname'; lab.textContent=name;
+  row.append(lab, sel, amt); utilRows.appendChild(row);
+});
+const utilAll = document.getElementById('utilAll');
+const utilDetail = document.getElementById('utilDetail');
+utilAll.addEventListener('change',()=> utilDetail.classList.toggle('hidden', utilAll.checked));
+
+/* ── Bildlänk-räknare ──────────────────────────────────────────────────── */
+const galleryEl = document.getElementById('gallery');
+const parseGallery = () => [...new Set(galleryEl.value.split('\n').map(x=>x.trim()).filter(x=>/^https?:\/\//i.test(x)))];
+const updateCount = ()=>{ document.getElementById('photoCount').textContent = `(${parseGallery().length} länkar)`; };
+galleryEl.addEventListener('input', updateCount);
+
+/* ── Fotouppladdare (filer) ────────────────────────────────────────────── */
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileList = document.getElementById('fileList');
+let currentFiles = [];
+const thumbCache = new Map();
+function thumbUrl(f){ if(!thumbCache.has(f)) thumbCache.set(f, URL.createObjectURL(f)); return thumbCache.get(f); }
+function pruneThumbs(){ for(const [f,u] of thumbCache){ if(!currentFiles.includes(f)){ URL.revokeObjectURL(u); thumbCache.delete(f);} } }
+function escapeName(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function addFiles(newFiles){
+  const imgs = Array.from(newFiles).filter(f=>f.type.startsWith('image/'));
+  let rejected=0;
+  for(const f of imgs){
+    if(currentFiles.some(c=>c.name===f.name && c.size===f.size && c.lastModified===f.lastModified)) continue;
+    if(currentFiles.length>=MAX_PHOTOS){ rejected++; continue; }
+    currentFiles.push(f);
+  }
+  renderFiles(rejected);
+}
+function removeFile(i){ currentFiles.splice(i,1); renderFiles(); }
+function moveFile(i,dir){ const to=i+dir; if(to<0||to>=currentFiles.length) return; const [f]=currentFiles.splice(i,1); currentFiles.splice(to,0,f); renderFiles(); flash(to); }
+function flash(i){ const el=fileList.querySelectorAll('.file-item')[i]; if(el) el.classList.add('moved'); }
+let dragFrom=null;
+function wireDrag(){
+  fileList.querySelectorAll('.file-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{ dragFrom=+item.dataset.idx; item.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+    item.addEventListener('dragend',()=>{ item.classList.remove('dragging'); fileList.querySelectorAll('.file-item').forEach(el=>el.classList.remove('drag-over')); dragFrom=null; });
+    item.addEventListener('dragover',e=>{ e.preventDefault(); item.classList.add('drag-over'); });
+    item.addEventListener('dragleave',()=>item.classList.remove('drag-over'));
+    item.addEventListener('drop',e=>{ e.preventDefault(); item.classList.remove('drag-over'); const to=+item.dataset.idx; if(dragFrom===null||dragFrom===to) return; const [f]=currentFiles.splice(dragFrom,1); currentFiles.splice(to,0,f); dragFrom=null; renderFiles(); flash(to); });
+  });
+}
+function renderFiles(rejected=0){
+  pruneThumbs();
+  if(!currentFiles.length){ fileList.innerHTML=''; return; }
+  const last=currentFiles.length-1;
+  let html = currentFiles.length>=2 ? `<div class="file-reorder-hint">Ändra ordningen med ▲▼ (eller dra på dator) — första bilden visas först.</div>` : '';
+  html += currentFiles.map((f,i)=>`
+    <div class="file-item" draggable="true" data-idx="${i}">
+      <span class="file-drag" aria-hidden="true">⋮⋮</span>
+      <img class="file-thumb" src="${thumbUrl(f)}" alt="" draggable="false">
+      <span class="file-name">${escapeName(f.name)}</span>
+      <span class="file-order"><button type="button" class="file-up" data-idx="${i}" ${i===0?'disabled':''}>▲</button><button type="button" class="file-down" data-idx="${i}" ${i===last?'disabled':''}>▼</button></span>
+      <button type="button" class="file-remove" data-idx="${i}" title="Ta bort">×</button>
+    </div>`).join('');
+  if(rejected>0) html += `<div class="banner err" style="margin-top:8px">För många bilder — de extra togs inte med (max ${MAX_PHOTOS}).</div>`;
+  fileList.innerHTML=html;
+  fileList.querySelectorAll('.file-remove').forEach(b=>b.addEventListener('click',()=>removeFile(+b.dataset.idx)));
+  fileList.querySelectorAll('.file-up').forEach(b=>b.addEventListener('click',()=>moveFile(+b.dataset.idx,-1)));
+  fileList.querySelectorAll('.file-down').forEach(b=>b.addEventListener('click',()=>moveFile(+b.dataset.idx,+1)));
+  wireDrag();
+}
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{ e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('over'));
+dropZone.addEventListener('drop',e=>{ e.preventDefault(); dropZone.classList.remove('over'); addFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change',()=>{ addFiles(fileInput.files); fileInput.value=''; });
+async function compressImage(file, maxDim=1600, quality=0.82){
+  if(!file.type.startsWith('image/')) return file;
+  try{
+    const img=await createImageBitmap(file);
+    const scale=Math.min(1, maxDim/Math.max(img.width,img.height));
+    const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+    const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+    canvas.getContext('2d').drawImage(img,0,0,w,h);
+    const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
+    return new File([blob], file.name.replace(/\.[^.]+$/,'.jpg'), {type:'image/jpeg'});
+  }catch(e){ return file; }
+}
+
+/* ── Fält & snabbfyll ──────────────────────────────────────────────────── */
+const SELECT_FIELDS = ['landlord_type','property_type','furnished','rent_currency','bed_duvet','bed_pillow','bed_sheets','bed_towels'];
+const TEXT_FIELDS = ['name','company','phone','country_iso','email','address','city','country','lat','lng','bedrooms','bed_places','bathrooms','showers','size','rent_amount','amenities_sv','amenities_en','parking_label_sv','parking_label_en','extra_info'];
+function setReviewVisible(v){
+  document.getElementById('reviewSection').classList.toggle('hidden', !v);
+  document.getElementById('btnManual').textContent = v ? 'Dölj fälten' : 'Fyll i för hand';
+}
+function showReview(){ setReviewVisible(true); }
+function prefillFromObject(obj){
+  const f = document.getElementById('form');
+  const set = (n,v)=>{ if(f.elements[n]!==undefined && v!==undefined && v!==null) f.elements[n].value = String(v); };
+  TEXT_FIELDS.forEach(n=> n in obj && set(n,obj[n]));
+  SELECT_FIELDS.forEach(n=>{ if(n in obj && obj[n]!=null && obj[n]!=='') set(n,obj[n]); });
+  if(Array.isArray(obj.gallery)){ galleryEl.value = obj.gallery.join('\n'); updateCount(); }
+  if(obj.utilities && typeof obj.utilities==='object'){
+    utilAll.checked=false; utilDetail.classList.remove('hidden');
+    UTILS.forEach(([key])=>{
+      const sel=utilRows.querySelector(`select[data-util="${key}"]`);
+      if(sel && obj.utilities[key]){ sel.value=obj.utilities[key]; sel.dispatchEvent(new Event('change')); }
+      const amt=utilRows.querySelector(`input[data-amt="${key}"]`);
+      if(amt && obj.utilities[key+'_amount']!=null) amt.value=String(obj.utilities[key+'_amount']);
+    });
+  } else if(String(obj.utilities_included)==='yes'){ utilAll.checked=true; utilDetail.classList.add('hidden'); }
+}
+
+/* ── Läs in med AI ─────────────────────────────────────────────────────── */
+const aiStatus = document.getElementById('aiStatus');
+document.getElementById('btnAI').addEventListener('click', async ()=>{
+  const url = document.getElementById('url').value.trim();
+  const instruction = document.getElementById('aiInstruction').value.trim();
+  if(!url && !instruction){ aiStatus.textContent='Ange en länk (eller extra info) först.'; return; }
+  const btn=document.getElementById('btnAI'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Läser…'; aiStatus.textContent='';
+  try{
+    const r = await fetch(`${CFG.fnBase}/${CFG.extractFn}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ url, instruction }) });
+    const j = await r.json();
+    if(!r.ok || j.error){ throw new Error(typeof j.error==='object'?JSON.stringify(j.error):(j.error||('HTTP '+r.status))); }
+    prefillFromObject(j.data || {});
+    showReview();
+    document.getElementById('reviewBanner').textContent = `AI:n (${j.model||'Claude'}) fyllde i fälten. Granska och rätta innan import — särskilt hyra, bäddset och att inga fel bilder kom med.`;
+    document.getElementById('reviewSection').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(e){ aiStatus.textContent = 'Fel: '+e.message; }
+  finally{ btn.disabled=false; btn.textContent='Läs in med AI →'; }
+});
+document.getElementById('btnManual').addEventListener('click',()=>{
+  const willShow = document.getElementById('reviewSection').classList.contains('hidden');
+  setReviewVisible(willShow);
+  if(willShow){ document.getElementById('reviewBanner').textContent='Fyll i fälten för hand.'; document.getElementById('reviewSection').scrollIntoView({behavior:'smooth', block:'start'}); }
+});
+document.getElementById('btnFill').addEventListener('click',()=>{
+  const raw=document.getElementById('aiJson').value.trim(); if(!raw) return;
+  let obj; try{ obj=JSON.parse(raw); }catch(e){ alert('Kunde inte tolka JSON:\n'+e.message); return; }
+  prefillFromObject(obj); showReview(); document.getElementById('reviewSection').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+/* ── Bygg payload ──────────────────────────────────────────────────────── */
+function buildData(){
+  const f = document.getElementById('form');
+  const g = n => (f.elements[n]?.value ?? '').trim();
+  const d = {};
+  [...TEXT_FIELDS, ...SELECT_FIELDS].forEach(n=> d[n]=g(n));
+  d.country_iso = d.country_iso.toUpperCase();
+  d.gallery = parseGallery();
+  d.photo_count = String(currentFiles.length + d.gallery.length);
+  if (utilAll.checked){ d.utilities_included = 'yes'; }
+  else {
+    d.utilities = {};
+    utilRows.querySelectorAll('select[data-util]').forEach(sel=>{
+      const k=sel.dataset.util; d.utilities[k]=sel.value;
+      const amt=utilRows.querySelector(`input[data-amt="${k}"]`);
+      if(sel.value==='partial' && amt.value.trim()) d.utilities[k+'_amount']=amt.value.trim();
+    });
+  }
+  return d;
+}
+
+/* ── Resultat-UI ───────────────────────────────────────────────────────── */
+const resultEl = document.getElementById('result');
+function banner(kind,msg){ return `<div class="banner ${kind}">${msg}</div>`; }
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function setBusy(on){ document.getElementById('btnImport').disabled=on; document.getElementById('btnPreview').disabled=on; }
+
+document.getElementById('btnPreview').addEventListener('click', async ()=>{
+  const d = buildData();
+  if(!d.address && !(d.lat && d.lng)){ resultEl.innerHTML = `<div class="result-card">${banner('err','Fyll i en adress (eller lat + lng).')}</div>`; return; }
+  setBusy(true);
+  resultEl.innerHTML = `<div class="result-card"><h3>Förhandsgranskar…</h3><div class="status-line"><span class="dot run"></span> Geokodar och bygger payload</div></div>`;
+  try{
+    const r = await fetch(`${CFG.fnBase}/${CFG.createFn}?dry_run=1`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) });
+    const j = await r.json();
+    if(!r.ok || j.error){ throw new Error(typeof j.error==='object'?JSON.stringify(j.error):(j.error||('HTTP '+r.status))); }
+    resultEl.innerHTML = `<div class="result-card">${banner('ok','Ingen post skapad — detta är vad “Importera” skulle skicka.')}
+      <h3>Payload-förhandsvisning</h3>
+      <div class="status-line"><span class="dot ok"></span> Geokod: lat ${esc(j.lat)}, lng ${esc(j.lng)}</div>
+      <div class="status-line"><span class="dot ok"></span> Ort-taggar: ${esc((j.nearby||[]).join(', '))}</div>
+      <div class="status-line"><span class="dot ok"></span> Foton: ${currentFiles.length} filer + ${d.gallery.length} länkar</div>
+      <pre class="payload">${esc(JSON.stringify(j.payload,null,2))}</pre></div>`;
+  }catch(e){ resultEl.innerHTML = `<div class="result-card">${banner('err','Förhandsgranskning misslyckades: '+esc(e.message))}</div>`; }
+  finally{ setBusy(false); }
+});
+
+/* ── Import ────────────────────────────────────────────────────────────── */
+document.getElementById('form').addEventListener('submit', async (ev)=>{
+  ev.preventDefault();
+  const d = buildData();
+  const urls = d.gallery;
+  const totalPhotos = currentFiles.length + urls.length;
+  if(!d.address && !(d.lat && d.lng)){ resultEl.innerHTML = `<div class="result-card">${banner('err','Fyll i en adress (eller lat + lng) innan import.')}</div>`; return; }
+  if(!confirm(`Skapa objektet i HV - Databas nu?\n\nAdress: ${d.address||'(lat/lng)'}\nFoton: ${currentFiles.length} filer + ${urls.length} länkar`)) return;
+
+  setBusy(true);
+  resultEl.innerHTML = `<div class="result-card"><h3>Importerar…</h3>
+    <div class="status-line" id="s-create"><span class="dot run"></span> Skapar objekt (geokod + ort-taggar)</div>
+    ${totalPhotos ? '<div class="progressbar"><i id="pbar"></i></div><div id="photolog"></div>' : ''}</div>`;
+  try{
+    const r = await fetch(`${CFG.fnBase}/${CFG.createFn}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) });
+    const j = await r.json();
+    if(!r.ok || j.error || !j.item_id){ throw new Error(typeof j.error==='object'?JSON.stringify(j.error):(j.error||('inget item_id (HTTP '+r.status+')'))); }
+    const itemId = j.item_id;
+    document.getElementById('s-create').innerHTML = `<span class="dot ok"></span> Objekt skapat · <a class="item-link" href="${CFG.itemUrl(itemId)}" target="_blank" rel="noopener">öppna i Monday (id ${esc(itemId)}) →</a>`;
+
+    const log = document.getElementById('photolog');
+    let done=0, ok=0, fail=0, idx=0;
+    const step = (label)=>{ const line=document.createElement('div'); line.className='status-line'; line.innerHTML=`<span class="dot run"></span> ${label}…`; log.appendChild(line); return line; };
+    const bump = (line, good, label)=>{ done++; if(good) ok++; else fail++; line.innerHTML=`<span class="dot ${good?'ok':'err'}"></span> ${label}`; const bar=document.getElementById('pbar'); if(bar) bar.style.width=Math.round(done/totalPhotos*100)+'%'; };
+    for(let k=0;k<currentFiles.length;k++){
+      idx++; const line=step(`Bild ${idx}/${totalPhotos} (fil)`);
+      try{ const comp=await compressImage(currentFiles[k]); const fd=new FormData(); fd.append('item_id',String(itemId)); fd.append('column_id',CFG.columnId); fd.append('file',comp,`image${idx}.jpg`);
+        const pr=await fetch(`${CFG.fnBase}/${CFG.fileFn}`, {method:'POST', body:fd}); if(!pr.ok) throw new Error('HTTP '+pr.status);
+        bump(line,true,`Bild ${idx}/${totalPhotos} (fil) uppladdad`);
+      }catch(e){ bump(line,false,`Bild ${idx}/${totalPhotos} (fil) — fel: ${esc(e.message)}`); }
+    }
+    for(let k=0;k<urls.length;k++){
+      idx++; const line=step(`Bild ${idx}/${totalPhotos} (länk)`);
+      try{ const pr=await fetch(`${CFG.fnBase}/${CFG.photoUrlFn}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({item_id:itemId, url:urls[k], index:idx, column_id:CFG.columnId})});
+        const pj=await pr.json(); if(!pr.ok || pj.error) throw new Error(typeof pj.error==='object'?JSON.stringify(pj.error):(pj.error||('HTTP '+pr.status)));
+        bump(line,true,`Bild ${idx}/${totalPhotos} (länk) uppladdad`);
+      }catch(e){ bump(line,false,`Bild ${idx}/${totalPhotos} (länk) — fel: ${esc(e.message)}`); }
+    }
+    const summary = totalPhotos ? `${ok} foton uppladdade${fail?`, ${fail} misslyckades`:''}.` : 'Objektet skapades utan foton.';
+    resultEl.querySelector('.result-card').insertAdjacentHTML('beforeend', banner(fail?'err':'ok', `Klart — ${summary}`));
+  }catch(e){
+    const sc=document.getElementById('s-create'); if(sc) sc.innerHTML=`<span class="dot err"></span> Kunde inte skapa objektet`;
+    resultEl.querySelector('.result-card').insertAdjacentHTML('afterbegin', banner('err','Import misslyckades: '+esc(e.message)));
+  }finally{ setBusy(false); }
+});
+
+document.getElementById('btnClear').addEventListener('click',()=>{
+  if(confirm('Rensa allt?')){
+    document.getElementById('form').reset(); document.getElementById('aiJson').value='';
+    document.getElementById('url').value=''; document.getElementById('aiInstruction').value='';
+    utilAll.checked=true; utilDetail.classList.add('hidden');
+    currentFiles=[]; renderFiles(); updateCount(); resultEl.innerHTML='';
+    setReviewVisible(false);
+    aiStatus.textContent='';
+  }
+});
+</script>
+</body>
+</html>

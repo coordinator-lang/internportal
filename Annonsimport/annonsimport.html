@@ -97,6 +97,7 @@
 
   #reviewSection.hidden { display:none; }
   .review-banner { background:#ecfdf5; border:1px solid #a7f3d0; color:#047857; border-radius:10px; padding:11px 14px; font-size:13px; margin-bottom:16px; }
+  .review-banner.warn { background:#fffbeb; border-color:#fde68a; color:#b45309; }
 
   #result { margin-top:22px; }
   .result-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
@@ -424,9 +425,16 @@ document.getElementById('btnAI').addEventListener('click', async ()=>{
     if(!r.ok || j.error){ throw new Error(typeof j.error==='object'?JSON.stringify(j.error):(j.error||('HTTP '+r.status))); }
     prefillFromObject(j.data || {});
     showReview();
-    let msg = `AI:n (${j.model||'Claude'}) fyllde i fälten. Granska och rätta innan import — särskilt hyra, bäddset och att inga fel bilder kom med.`;
-    if(j.vision){ msg += (j.vision.added && j.vision.added.length) ? ` Från bilderna lades till: ${j.vision.added.join(', ')}.` : ' Bilderna gav inga extra bekvämligheter.'; }
-    document.getElementById('reviewBanner').textContent = msg;
+    const rb = document.getElementById('reviewBanner');
+    if(j.read_failed){
+      rb.classList.add('warn');
+      rb.textContent = '⚠️ Sidan kunde inte läsas automatiskt' + (j.read_note ? ' ('+j.read_note+')' : '') + '. Bara det du angav i "extra info/instruktion" användes. Klistra in annonstexten där och läs in igen, eller fyll i fälten för hand — och lägg till bilderna manuellt.';
+    } else {
+      rb.classList.remove('warn');
+      let msg = `AI:n (${j.model||'Claude'}) fyllde i fälten. Granska och rätta innan import — särskilt hyra, bäddset och att inga fel bilder kom med.`;
+      if(j.vision){ msg += (j.vision.added && j.vision.added.length) ? ` Från bilderna lades till: ${j.vision.added.join(', ')}.` : ' Bilderna gav inga extra bekvämligheter.'; }
+      rb.textContent = msg;
+    }
     document.getElementById('reviewSection').scrollIntoView({behavior:'smooth', block:'start'});
   }catch(e){ aiStatus.textContent = 'Fel: '+e.message; }
   finally{ btn.disabled=false; btn.textContent='Läs in med AI →'; }

@@ -61,6 +61,19 @@
   .dropzone .dz-icon { font-size:24px; }
   .dropzone .dz-main { font-size:14px; font-weight:600; margin-top:4px; }
   .dropzone .dz-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .dz-status { font-size:12.5px; color:var(--accent-dark); margin-top:8px; display:none; }
+  .dz-status.show { display:block; }
+  /* Adressökning (Photon/OpenStreetMap) — portad från hyresvärdformulär v49.1 */
+  .ac-wrap { position:relative; }
+  .autocomplete-list { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:10px; box-shadow:0 12px 32px rgba(15,23,42,.12); max-height:280px; overflow-y:auto; z-index:50; display:none; }
+  .autocomplete-list.visible { display:block; }
+  .autocomplete-item { padding:10px 13px; font-size:14px; color:var(--ink); cursor:pointer; border-bottom:1px solid var(--border); line-height:1.4; display:flex; align-items:center; gap:9px; }
+  .autocomplete-item:last-child { border-bottom:none; }
+  .autocomplete-item:hover, .autocomplete-item.active { background:#fff5ec; }
+  .autocomplete-item .pin { color:var(--accent); flex-shrink:0; }
+  .autocomplete-item .text { flex:1; min-width:0; }
+  .autocomplete-loading, .autocomplete-empty { padding:11px 13px; font-size:13px; color:var(--muted); }
+  .autocomplete-loading { font-style:italic; }
   .file-list { margin-top:14px; }
   .file-list .file-reorder-hint { margin-bottom:8px; font-size:12.5px; color:var(--muted); }
   .file-list .file-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background:#fff; border:1px solid var(--border); margin-bottom:6px; cursor:grab; transition:box-shadow .15s, border-color .15s, background .15s; }
@@ -155,9 +168,10 @@
       <div class="dropzone" id="dropZone">
         <div class="dz-icon">🖼️</div>
         <div class="dz-main">Dra in bilder här, eller klicka för att välja</div>
-        <div class="dz-sub">JPG/PNG · komprimeras automatiskt · max 40 st</div>
+        <div class="dz-sub">JPG/PNG/HEIC · komprimeras automatiskt · max 40 st</div>
       </div>
-      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+      <input type="file" id="fileInput" accept="image/*,.heic,.heif" multiple hidden>
+      <div class="dz-status" id="dzStatus"></div>
       <div class="file-list" id="fileList"></div>
     </div>
 
@@ -202,9 +216,14 @@
 
       <div class="card">
         <h2><span class="num">3</span> Plats</h2>
-        <p class="hint">Adressen geokodas automatiskt. Fyll i lat/lng bara om geokod misslyckas.</p>
+        <p class="hint">Börja skriva så söker den fram adressen (fyller i ort, land & koordinater). Fyll i lat/lng bara om geokod misslyckas.</p>
         <div class="grid">
-          <div class="field full"><label>Adress</label><input name="address"></div>
+          <div class="field full"><label>Adress</label>
+            <div class="ac-wrap">
+              <input name="address" id="acInput" placeholder="Börja skriva adress…" autocomplete="off">
+              <div class="autocomplete-list" id="autocompleteList"></div>
+            </div>
+          </div>
           <div class="field"><label>Ort</label><input name="city"></div>
           <div class="field"><label>Land</label><input name="country"></div>
           <div class="field"><label>Lat <span class="opt">(valfritt)</span></label><input name="lat" placeholder="auto"></div>
@@ -325,14 +344,54 @@ const thumbCache = new Map();
 function thumbUrl(f){ if(!thumbCache.has(f)) thumbCache.set(f, URL.createObjectURL(f)); return thumbCache.get(f); }
 function pruneThumbs(){ for(const [f,u] of thumbCache){ if(!currentFiles.includes(f)){ URL.revokeObjectURL(u); thumbCache.delete(f);} } }
 function escapeName(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function addFiles(newFiles){
-  const imgs = Array.from(newFiles).filter(f=>f.type.startsWith('image/'));
-  let rejected=0;
-  for(const f of imgs){
-    if(currentFiles.some(c=>c.name===f.name && c.size===f.size && c.lastModified===f.lastModified)) continue;
-    if(currentFiles.length>=MAX_PHOTOS){ rejected++; continue; }
-    currentFiles.push(f);
+/* HEIC-stöd: Chrome/Edge kan inte avkoda iPhone-HEIC (createImageBitmap kastar → bilden
+   laddades förr upp i original). Konvertera HEIC→JPEG i webbläsaren först, sedan går den
+   vanliga komprimeringen igenom. heic2any laddas bara när en HEIC faktiskt dyker upp. */
+let heicLibPromise=null;
+function loadHeicLib(){
+  if(window.heic2any) return Promise.resolve(window.heic2any);
+  if(!heicLibPromise){
+    heicLibPromise=new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+      s.onload=()=>resolve(window.heic2any);
+      s.onerror=()=>{ heicLibPromise=null; reject(new Error('Kunde inte ladda HEIC-konverteraren (kräver internet).')); };
+      document.head.appendChild(s);
+    });
   }
+  return heicLibPromise;
+}
+function isHeic(f){ return /\.(heic|heif)$/i.test(f.name||'') || /^image\/hei[cf]/i.test(f.type||''); }
+async function toJpegIfHeic(file){
+  if(!isHeic(file)) return file;
+  const heic2any=await loadHeicLib();
+  const out=await heic2any({ blob:file, toType:'image/jpeg', quality:0.9 });
+  const blob=Array.isArray(out)?out[0]:out;
+  return new File([blob], (file.name||'bild').replace(/\.[^.]+$/,'')+'.jpg', {type:'image/jpeg', lastModified:file.lastModified});
+}
+const dzStatus=document.getElementById('dzStatus');
+function setDzStatus(msg){ if(!dzStatus) return; if(msg){ dzStatus.textContent=msg; dzStatus.classList.add('show'); } else dzStatus.classList.remove('show'); }
+let addBusy=false;
+async function addFiles(newFiles){
+  // Acceptera riktiga bilder + HEIC/HEIF även när Windows ger dem tom MIME-typ.
+  const imgs = Array.from(newFiles).filter(f=>(f.type||'').startsWith('image/') || isHeic(f));
+  const heicCount = imgs.filter(isHeic).length;
+  let rejected=0, failed=0, added=0;
+  addBusy=true;
+  if(heicCount) setDzStatus(`Konverterar ${heicCount} HEIC-bild${heicCount>1?'er':''} till JPEG…`);
+  for(const src of imgs){
+    if(currentFiles.length>=MAX_PHOTOS){ rejected++; continue; }
+    // Dubblettkoll på originalfilen (före ev. konvertering).
+    if(currentFiles.some(c=>c._srcName===src.name && c._srcSize===src.size && c._srcMod===src.lastModified)) continue;
+    let f=src;
+    try{ f=await toJpegIfHeic(src); }
+    catch(err){ failed++; console.warn('HEIC-konvertering misslyckades:',err); continue; }
+    try{ f._srcName=src.name; f._srcSize=src.size; f._srcMod=src.lastModified; }catch(_){}
+    currentFiles.push(f); added++;
+  }
+  addBusy=false;
+  setDzStatus(failed ? `${failed} HEIC-bild${failed>1?'er':''} kunde inte konverteras — spara dem som JPG och försök igen.` : '');
+  if(failed) setTimeout(()=>{ if(!addBusy) setDzStatus(''); }, 6000);
   renderFiles(rejected);
 }
 function removeFile(i){ currentFiles.splice(i,1); renderFiles(); }
@@ -373,6 +432,70 @@ dropZone.addEventListener('dragover',e=>{ e.preventDefault(); dropZone.classList
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('over'));
 dropZone.addEventListener('drop',e=>{ e.preventDefault(); dropZone.classList.remove('over'); addFiles(e.dataTransfer.files); });
 fileInput.addEventListener('change',()=>{ addFiles(fileInput.files); fileInput.value=''; });
+
+/* ── Adressökning (Photon/OpenStreetMap) — portad från hyresvärdformulär v49.1 ── */
+const acInput = document.getElementById('acInput');
+const acList  = document.getElementById('autocompleteList');
+let acTimer=null, acResults=[], acActiveIdx=-1;
+if(acInput){
+  acInput.addEventListener('input',()=>{ const q=acInput.value.trim(); clearTimeout(acTimer); if(q.length<3){ hideAC(); return; } acTimer=setTimeout(()=>fetchAC(q),300); });
+  acInput.addEventListener('keydown',e=>{
+    if(!acList.classList.contains('visible')) return;
+    if(e.key==='ArrowDown'){ e.preventDefault(); acActiveIdx=Math.min(acActiveIdx+1,acResults.length-1); updateAC(); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); acActiveIdx=Math.max(acActiveIdx-1,0); updateAC(); }
+    else if(e.key==='Enter'&&acActiveIdx>=0){ e.preventDefault(); e.stopPropagation(); pickAC(acResults[acActiveIdx]); }
+    else if(e.key==='Escape'){ hideAC(); }
+  });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.ac-wrap')) hideAC(); });
+}
+async function fetchAC(q){
+  acList.innerHTML='<div class="autocomplete-loading">Söker…</div>'; acList.classList.add('visible');
+  try{
+    const res=await fetch('https://photon.komoot.io/api/?lang=default&limit=6&q='+encodeURIComponent(q));
+    if(!res.ok){ hideAC(); return; }
+    const data=await res.json();
+    acResults=(data.features||[]).map(f=>({
+      name:f.properties.name||'', street:f.properties.street||'', housenumber:f.properties.housenumber||'',
+      postcode:f.properties.postcode||'', city:f.properties.city||f.properties.town||f.properties.village||'',
+      country:f.properties.country||'', countrycode:f.properties.countrycode||'',
+      lng:(f.geometry&&f.geometry.coordinates&&f.geometry.coordinates[0]!=null)?String(f.geometry.coordinates[0]):'',
+      lat:(f.geometry&&f.geometry.coordinates&&f.geometry.coordinates[1]!=null)?String(f.geometry.coordinates[1]):''
+    }));
+    renderAC();
+  }catch(err){ acList.innerHTML='<div class="autocomplete-empty">Sökning misslyckades — försök igen</div>'; }
+}
+function fmtAC(r){
+  let line=''; if(r.street) line=r.street+(r.housenumber?' '+r.housenumber:''); else if(r.name) line=r.name;
+  const tail=[r.postcode,r.city].filter(Boolean).join(' ');
+  let out = (line&&tail) ? line+', '+tail : (line||tail||r.name||'Okänd adress');
+  if(r.country&&r.countrycode&&r.countrycode.toLowerCase()!=='se') out+=', '+r.country;
+  return out;
+}
+function renderAC(){
+  if(!acResults.length){ acList.innerHTML='<div class="autocomplete-empty">Inga adresser hittades</div>'; return; }
+  acActiveIdx=-1;
+  acList.innerHTML=acResults.map((r,i)=>`
+    <div class="autocomplete-item" data-idx="${i}">
+      <svg class="pin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div class="text">${escapeName(fmtAC(r))}</div>
+    </div>`).join('');
+  acList.querySelectorAll('.autocomplete-item').forEach(el=>el.addEventListener('click',()=>pickAC(acResults[+el.dataset.idx])));
+}
+function updateAC(){
+  acList.querySelectorAll('.autocomplete-item').forEach((el,i)=>el.classList.toggle('active',i===acActiveIdx));
+  const a=acList.querySelector('.autocomplete-item.active'); if(a) a.scrollIntoView({block:'nearest'});
+}
+function acSet(name,val){ const el=document.querySelector(`[name="${name}"]`); if(el) el.value=val; }
+function pickAC(r){
+  if(acInput) acInput.value=fmtAC(r);
+  acSet('city', r.city||'');
+  acSet('country', r.country||'');
+  acSet('country_iso', (r.countrycode||'').toUpperCase());
+  acSet('lat', r.lat||'');
+  acSet('lng', r.lng||'');
+  hideAC(); if(acInput) acInput.focus();
+}
+function hideAC(){ acList.classList.remove('visible'); acActiveIdx=-1; }
 async function compressImage(file, maxDim=1600, quality=0.82){
   if(!file.type.startsWith('image/')) return file;
   try{

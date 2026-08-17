@@ -60,6 +60,9 @@ Nordicta Internal Website/
 ├── Riktprisdatabas/
 │   └── riktprisdatabas.html             ← STABILT FILNAMN (permanent länk, aldrig 404) — sökbar riktprisdatabas för AM; versioneras separat i källmappen "Nordicta riktprisdatabas\", skrivs över vid ny version
 │
+├── Stadkalkylator/
+│   └── stadkalkylator.html              ← STABILT FILNAMN (permanent länk, aldrig 404) — kundpris städ vid avflytt + offertförfrågan; versioneras separat i källmappen "Nordicta slutstädkalkylator\" (senaste stadkalkylator_v4.html), skrivs över vid ny version
+│
 ├── Inflytt_Utflytt/
 │   └── inflytt-utflytt-guide_v3.9.html  ← workflow-guide för in-/utflytt, hostad oförändrad (har egen "← Internportal"-länk; versionshanteras separat)
 │

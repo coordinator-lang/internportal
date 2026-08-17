@@ -89,7 +89,7 @@
   input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;appearance:none;margin:0}
   input[type=number]{-moz-appearance:textfield;appearance:textfield}
   .field-w{width:150px}
-  #kvm,#nBad,#nSov,#firmOffer{width:96px}
+  #kvm,#nBad,#nSov,#nWc,#firmOffer{width:96px}
   #adress,#objref{width:100%;max-width:230px}
 
   /* output rows */
@@ -169,7 +169,7 @@
     .row .sub{margin-top:1px}
     .row input[type=text],.row input[type=number],.row select{
       width:100% !important;max-width:none;text-align:left;font-size:15px;padding:10px 12px}
-    #adress,#kvm,#nBad,#nSov,#firmOffer,.field-w{width:100% !important;max-width:none}
+    #adress,#kvm,#nBad,#nSov,#nWc,#firmOffer,.field-w{width:100% !important;max-width:none}
     /* utfalls-/värderader förblir etikett | värde men får mer luft och plats åt siffran */
     .out{padding:10px 0;gap:10px} .out span{flex:1} .out b{white-space:nowrap}
     .out.big b{font-size:17px}
@@ -254,11 +254,12 @@
             <input type="text" id="kommun" list="kommunlist" autocomplete="off" placeholder="Sök kommun…"><datalist id="kommunlist"></datalist></div>
           <div class="row"><label>Adress / ort <span class="sub">visas i förfrågan</span></label><input type="text" id="adress" placeholder="t.ex. Storgatan 1, Gävle"></div>
           <div class="row"><label>Storlek (kvm)</label><input type="number" id="kvm" min="0" step="1" value="95"></div>
-          <div class="row"><label>Städnivå</label><select id="niva" class="field-w"></select></div>
+          <div class="row"><label>Städvariant <span class="sub">Grundlig ≈ Nordictas städstandard</span></label><select id="niva" class="field-w"></select></div>
         </div>
         <div>
           <div class="row"><label>Antal badrum</label><input type="number" id="nBad" min="0" step="1" value="1"></div>
-          <div class="row"><label>Antal sovrum</label><input type="number" id="nSov" min="0" step="1" value="1"></div>
+          <div class="row"><label>Antal sovrum <span class="sub">info till städfirman</span></label><input type="number" id="nSov" min="0" step="1" value="1"></div>
+          <div class="row"><label>Extra WC <span class="sub">utöver badrum</span></label><input type="number" id="nWc" min="0" step="1" value="0"></div>
           <div class="row"><label>Balkong / terrass</label><select id="qBalk" class="jn"></select></div>
           <div class="row"><label>Källare</label><select id="qKall" class="jn"></select></div>
           <div class="row"><label>Garage</label><select id="qGar" class="jn"></select></div>
@@ -273,14 +274,18 @@
     <div class="card" style="--accent:#3b82f6">
       <div class="card-head"><span class="card-num">02</span><span class="card-title">Beräknad arbetstid</span></div>
       <div class="body">
-        <div class="out"><span>Grundtid</span><b id="o_grund"></b></div>
-        <div class="out"><span>Tid för yta (kvm)</span><b id="o_yta"></b></div>
-        <div class="out"><span>Tid badrum / sovrum</span><b id="o_rum"></b></div>
-        <div class="out"><span>Tid källare / garage / balkong / fönster</span><b id="o_extra"></b></div>
-        <div class="out"><span>Delsumma (innan nivåfaktor)</span><b id="o_delsum"></b></div>
-        <div class="out"><span>Nivåfaktor</span><b id="o_faktor"></b></div>
+        <div class="out"><span>Grundtid <span class="sub">1,0 h fast</span></span><b id="o_grund"></b></div>
+        <div class="out"><span>Tid för yta <span class="sub">kvm × 0,035 h</span></span><b id="o_yta"></b></div>
+        <div class="out"><span>Kök / pentry <span class="sub">ett kök ingår alltid</span></span><b id="o_kok"></b></div>
+        <div class="out"><span>Badrum / extra WC</span><b id="o_rum"></b></div>
+        <div class="out"><span>Källare / garage / balkong</span><b id="o_extra"></b></div>
+        <div class="out"><span>Invändig fönsterputs <span class="sub">kvm × 0,015 h</span></span><b id="o_fon"></b></div>
+        <div class="out"><span>Delsumma</span><b id="o_delsum"></b></div>
+        <div class="out"><span>Städvariant</span><b id="o_faktor"></b></div>
+        <div class="out"><span>Möblerad bostad <span class="sub">alltid — vi har bara möblerat</span></span><b id="o_mobl"></b></div>
         <div class="out big"><span>Beräknad total arbetstid</span><b id="o_tid"></b></div>
-        <div class="out hl"><span>Bemanningsförslag</span><b id="o_beman"></b></div>
+        <div class="out hl"><span>Bemanningsförslag <span class="sub">tid på plats</span></span><b id="o_beman"></b></div>
+        <div class="hint" id="o_beman_alt"></div>
       </div>
     </div>
 
@@ -376,16 +381,16 @@
     </div>
   </div>
 
-  <div class="footer">Nordicta Corporate Housing &nbsp;·&nbsp; Intern användning &nbsp;·&nbsp; Städkalkylator v4</div>
+  <div class="footer">Nordicta Corporate Housing &nbsp;·&nbsp; Intern användning &nbsp;·&nbsp; Städkalkylator v5</div>
 </div>
 
 <script>
 const KNOWN_TIMPRIS={"Gävle":390,"Sandviken":390};
 const DEFAULT_TIMPRIS=390;
 const KOMMUNER="Ale|Alingsås|Alvesta|Aneby|Arboga|Arjeplog|Arvidsjaur|Arvika|Askersund|Avesta|Bengtsfors|Berg|Bjurholm|Bjuv|Boden|Bollebygd|Bollnäs|Borgholm|Borlänge|Borås|Botkyrka|Boxholm|Bromölla|Bräcke|Burlöv|Båstad|Dals-Ed|Danderyd|Degerfors|Dorotea|Eda|Ekerö|Eksjö|Emmaboda|Enköping|Eskilstuna|Eslöv|Essunga|Fagersta|Falkenberg|Falköping|Falun|Filipstad|Finspång|Flen|Forshaga|Färgelanda|Gagnef|Gislaved|Gnesta|Gnosjö|Gotland|Grums|Grästorp|Gullspång|Gällivare|Gävle|Göteborg|Götene|Habo|Hagfors|Hallsberg|Hallstahammar|Halmstad|Hammarö|Haninge|Haparanda|Heby|Hedemora|Helsingborg|Herrljunga|Hjo|Hofors|Huddinge|Hudiksvall|Hultsfred|Hylte|Hällefors|Härjedalen|Härnösand|Härryda|Hässleholm|Håbo|Höganäs|Högsby|Hörby|Höör|Jokkmokk|Järfälla|Jönköping|Kalix|Kalmar|Karlsborg|Karlshamn|Karlskoga|Karlskrona|Karlstad|Katrineholm|Kil|Kinda|Kiruna|Klippan|Knivsta|Kramfors|Kristianstad|Kristinehamn|Krokom|Kumla|Kungsbacka|Kungsör|Kungälv|Kävlinge|Köping|Laholm|Landskrona|Laxå|Lekeberg|Leksand|Lerum|Lessebo|Lidingö|Lidköping|Lilla Edet|Lindesberg|Linköping|Ljungby|Ljusdal|Ljusnarsberg|Lomma|Ludvika|Luleå|Lund|Lycksele|Lysekil|Malmö|Malung-Sälen|Malå|Mariestad|Mark|Markaryd|Mellerud|Mjölby|Mora|Motala|Mullsjö|Munkedal|Munkfors|Mölndal|Mönsterås|Mörbylånga|Nacka|Nora|Norberg|Nordanstig|Nordmaling|Norrköping|Norrtälje|Norsjö|Nybro|Nykvarn|Nyköping|Nynäshamn|Nässjö|Ockelbo|Olofström|Orsa|Orust|Osby|Oskarshamn|Ovanåker|Oxelösund|Pajala|Partille|Perstorp|Piteå|Ragunda|Robertsfors|Ronneby|Rättvik|Sala|Salem|Sandviken|Sigtuna|Simrishamn|Sjöbo|Skara|Skellefteå|Skinnskatteberg|Skurup|Skövde|Smedjebacken|Sollefteå|Sollentuna|Solna|Sorsele|Sotenäs|Staffanstorp|Stenungsund|Stockholm|Storfors|Storuman|Strängnäs|Strömstad|Strömsund|Sundbyberg|Sundsvall|Sunne|Surahammar|Svalöv|Svedala|Svenljunga|Säffle|Säter|Sävsjö|Söderhamn|Söderköping|Södertälje|Sölvesborg|Tanum|Tibro|Tidaholm|Tierp|Timrå|Tingsryd|Tjörn|Tomelilla|Torsby|Torsås|Tranemo|Tranås|Trelleborg|Trollhättan|Trosa|Tyresö|Täby|Töreboda|Uddevalla|Ulricehamn|Umeå|Upplands Väsby|Upplands-Bro|Uppsala|Uppvidinge|Vadstena|Vaggeryd|Valdemarsvik|Vallentuna|Vansbro|Vara|Varberg|Vaxholm|Vellinge|Vetlanda|Vilhelmina|Vimmerby|Vindeln|Vingåker|Vänersborg|Vännäs|Värmdö|Värnamo|Västervik|Västerås|Växjö|Vårgårda|Ydre|Ystad|Älmhult|Älvdalen|Älvkarleby|Älvsbyn|Ängelholm|Åmål|Ånge|Åre|Årjäng|Åsele|Åstorp|Åtvidaberg|Öckerö|Ödeshög|Örebro|Örkelljunga|Örnsköldsvik|Östersund|Österåker|Östhammar|Östra Göinge|Överkalix|Övertorneå".split("|");
-const NIVA={ "Standard":1, "Utökad städ":1.3, "Sanering":1.8 };
-const T={ GRUND:1.5, KVM:0.02, BAD:0.5, SOVRUM:0.5, KALL:0.5, GAR:0.3, BALK:0.3, FON:1 };
-const P={ PASLAG:0.15, GRON_MIN:-0.10, GRON_MAX:0.15, ROD_LOW:-0.25, ROD_HIGH:0.50, STOR_KVM:140, MANGA:3, HOG_TID:8 };
+const NIVA={ "Bas":1, "Standard":1.25, "Grundlig":1.5, "Sanering":1.8 };
+const T={ GRUND:1.0, KVM:0.035, KOK:1.25, BAD1:0.90, BAD_EXTRA:0.75, WC:0.40, KALL:0.60, GAR:0.50, BALK:0.40, FON_KVM:0.015, MOBLERAD:0.15 };
+const P={ PASLAG:0.15, GRON_MIN:-0.10, GRON_MAX:0.15, ROD_LOW:-0.25, ROD_HIGH:0.50, STOR_KVM:140, MANGA:3, HOG_TID:18, MAX_PASS:7 };
 const TILLAGG=[
   ["Extrem nedsmutsning","Extra tid",1.5],
   ["Mögel","Extra tid",1],
@@ -435,20 +440,31 @@ function regenRfq(){ rfqEdited=false; buildRfq(); saveState(); }
 function handle(){ calc(); saveState(); }
 
 function calc(){
-  const kvm=num('kvm'), nBad=num('nBad'), nSov=num('nSov');
+  const kvm=num('kvm'), nBad=num('nBad'), nSov=num('nSov'), nWc=num('nWc');
   const niva=val('niva'), faktor=NIVA[niva]||1;
   const timpris=num('timpris'), framk=num('framk');
 
   const tGrund=T.GRUND, tYta=kvm*T.KVM;
-  const tRum=Math.max(nBad-1,0)*T.BAD + Math.max(nSov-1,0)*T.SOVRUM;
-  const tExtra=(isJa('qKall')?T.KALL:0)+(isJa('qGar')?T.GAR:0)+(isJa('qBalk')?T.BALK:0)+(isJa('qFon')?T.FON:0);
-  const delsum=tGrund+tYta+tRum+tExtra, totTid=delsum*faktor;
-  const pers=totTid<=4?1:totTid<=8?2:totTid<=12?3:4;
-  const beman=pers+" person"+(pers>1?"er":"")+" × "+(totTid/pers).toLocaleString('sv-SE',{minimumFractionDigits:1,maximumFractionDigits:1})+" timmar";
-  $('o_grund').textContent=h(tGrund); $('o_yta').textContent=h(tYta); $('o_rum').textContent=h(tRum);
-  $('o_extra').textContent=h(tExtra); $('o_delsum').textContent=h(delsum);
-  $('o_faktor').textContent="× "+faktor.toLocaleString('sv-SE'); $('o_tid').textContent=h(totTid);
+  const tKok=T.KOK;
+  const tRum=(nBad>0?T.BAD1+Math.max(nBad-1,0)*T.BAD_EXTRA:0) + nWc*T.WC;
+  const tExtra=(isJa('qKall')?T.KALL:0)+(isJa('qGar')?T.GAR:0)+(isJa('qBalk')?T.BALK:0);
+  const tFon=isJa('qFon')?kvm*T.FON_KVM:0;
+  const delsum=tGrund+tYta+tKok+tRum+tExtra+tFon;
+  const eftervariant=delsum*faktor;
+  const tMobl=eftervariant*T.MOBLERAD;
+  const totTid=eftervariant+tMobl;
+  const pers=Math.min(4,Math.max(1,Math.ceil(totTid/P.MAX_PASS)));
+  const nf=t=>t.toLocaleString('sv-SE',{minimumFractionDigits:1,maximumFractionDigits:1});
+  const beman=pers+" person"+(pers>1?"er":"")+" × "+nf(totTid/pers)+" timmar";
+  $('o_grund').textContent=h(tGrund); $('o_yta').textContent=h(tYta);
+  $('o_kok').textContent=h(tKok); $('o_rum').textContent=h(tRum);
+  $('o_extra').textContent=h(tExtra); $('o_fon').textContent=h(tFon);
+  $('o_delsum').textContent=h(delsum);
+  $('o_faktor').textContent=niva+" × "+faktor.toLocaleString('sv-SE');
+  $('o_mobl').textContent="+15 % · "+h(tMobl);
+  $('o_tid').textContent=h(totTid);
   $('o_beman').textContent=beman;
+  $('o_beman_alt').textContent="Alternativ: "+[1,2,3].map(p=>p+" pers → "+nf(totTid/p)+" h").join("  ·  ");
 
   let sumTill=0, aktiva=0;
   TILLAGG.forEach((t,i)=>{
@@ -532,7 +548,7 @@ function calc(){
 function buildRfq(){
   if(rfqEdited) return;
   const jn=id=>isJa(id)?"Ja":"Nej";
-  const kvm=num('kvm'), niva=val('niva'), nBad=num('nBad'), nSov=num('nSov');
+  const kvm=num('kvm'), niva=val('niva'), nBad=num('nBad'), nSov=num('nSov'), nWc=num('nWc');
   const platsen=val('adress').trim()||val('kommun').trim()||"(ort ej angiven)";
   let extra=[];
   TILLAGG.forEach((t,i)=>{ if($('add_c'+i).checked){ const m=val('add_m'+i).trim(); extra.push("• "+t[0]+(m?" – "+m:"")); } });
@@ -544,10 +560,12 @@ function buildRfq(){
   L.push("• Storlek: "+(kvm||0)+" kvm");
   L.push("• Omfattningsnivå: "+niva);
   L.push("• Badrum: "+nBad+" st");
+  if(nWc>0) L.push("• Extra WC: "+nWc+" st");
   L.push("• Sovrum: "+nSov+" st");
   L.push("• Balkong / terrass: "+jn('qBalk'));
   L.push("• Källare: "+jn('qKall'));
   L.push("• Garage: "+jn('qGar'));
+  L.push("• Möblerad bostad: Ja");
   L.push("• Invändig fönsterputs önskas: "+jn('qFon'));
   L.push("");
   if(extra.length){ L.push("SÄRSKILDA FÖRHÅLLANDEN"); extra.forEach(e=>L.push(e)); L.push(""); }
@@ -585,10 +603,10 @@ function mailRfq(){
   window.location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent($('rfq').value);
 }
 
-const FIELDS=['kommun','timpris','framk','adress','kvm','niva','nBad','nSov','qBalk','qKall','qGar','qFon','firmOffer'];
+const FIELDS=['kommun','timpris','framk','adress','kvm','niva','nBad','nSov','nWc','qBalk','qKall','qGar','qFon','firmOffer'];
 function collectState(){ const o={}; FIELDS.forEach(id=>o[id]=$(id).value); o.incOffer=$('incOffer').checked;
-  o.till=TILLAGG.map((t,i)=>({c:$('add_c'+i).checked,m:$('add_m'+i).value,kr:($('add_kr'+i)?$('add_kr'+i).value:'')})); o.rfq=$('rfq').value; o.rfqEdited=rfqEdited; return o; }
-function applyState(o){ if(o.niva && !(o.niva in NIVA)) o.niva=(String(o.niva).indexOf("Sanering")>=0?"Sanering":String(o.niva).indexOf("Utökad")>=0?"Utökad städ":"Standard"); FIELDS.forEach(id=>{ if(o[id]!==undefined) $(id).value=o[id]; }); if(o.incOffer!==undefined)$('incOffer').checked=!!o.incOffer;
+  o.till=TILLAGG.map((t,i)=>({c:$('add_c'+i).checked,m:$('add_m'+i).value,kr:($('add_kr'+i)?$('add_kr'+i).value:'')})); o.rfq=$('rfq').value; o.rfqEdited=rfqEdited; o.mv=5; return o; }
+function applyState(o){ if(o.mv!==5) o.niva=(String(o.niva).indexOf("Sanering")>=0?"Sanering":"Grundlig"); if(!(o.niva in NIVA)) o.niva="Grundlig"; FIELDS.forEach(id=>{ if(o[id]!==undefined) $(id).value=o[id]; }); if(o.incOffer!==undefined)$('incOffer').checked=!!o.incOffer;
   if(o.till) o.till.forEach((t,i)=>{ if($('add_c'+i)){ $('add_c'+i).checked=!!t.c; $('add_m'+i).value=t.m||''; if($('add_kr'+i))$('add_kr'+i).value=t.kr||''; } });
   rfqEdited=!!o.rfqEdited; if(o.rfq!==undefined) $('rfq').value=o.rfq; }
 function saveState(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(collectState())); }catch(e){} }
@@ -599,7 +617,7 @@ function loadSaved(){ try{ const r=localStorage.getItem(LS_KEY); if(r){ applySta
 function setJN(id,v){ $(id).value=v; }
 function loadExample(){
   $('kommun').value="Gävle"; $('timpris').value=390; $('framk').value=0; $('adress').value="";
-  $('kvm').value=95; $('niva').value="Standard"; $('nBad').value=1; $('nSov').value=1;
+  $('kvm').value=95; $('niva').value="Grundlig"; $('nBad').value=1; $('nSov').value=1; $('nWc').value=0;
   ["qBalk","qKall","qGar","qFon"].forEach(id=>setJN(id,"Nej"));
   TILLAGG.forEach((t,i)=>{ $('add_c'+i).checked=false; $('add_m'+i).value=""; if($('add_kr'+i))$('add_kr'+i).value=""; });
   $('firmOffer').value=""; $('incOffer').checked=false; rfqEdited=false;
@@ -607,7 +625,7 @@ function loadExample(){
 }
 function resetEmpty(){
   $('kommun').value=""; $('timpris').value=390; $('framk').value=0; $('adress').value="";
-  $('kvm').value=""; $('niva').value="Standard"; $('nBad').value=1; $('nSov').value=1;
+  $('kvm').value=""; $('niva').value="Grundlig"; $('nBad').value=1; $('nSov').value=1; $('nWc').value=0;
   ["qBalk","qKall","qGar","qFon"].forEach(id=>setJN(id,"Nej"));
   TILLAGG.forEach((t,i)=>{ $('add_c'+i).checked=false; $('add_m'+i).value=""; if($('add_kr'+i))$('add_kr'+i).value=""; });
   $('firmOffer').value=""; $('incOffer').checked=false; rfqEdited=false;

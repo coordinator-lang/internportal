@@ -54,8 +54,11 @@ Nordicta Internal Website/
 ├── Bostadskalkylator/
 │   └── bostadskalkylator.html           ← PERMANENT LÄNK + själva kalkylatorn (stabilt filnamn, skrivs över vid ny version)
 │
-├── Annonsimport/
-│   └── annonsimport.html                ← STABILT FILNAMN (permanent länk, aldrig 404) — AI-annonsimport → HV-Databas; versioneras separat i källmappen "Nordicta annonsimport\", skrivs över vid ny version
+├── annonsimport/                        ← GEMENER (skiftläge viktigt! webbläsartillägget hämtar update-URL:en /internportal/annonsimport/version.json med gemener)
+│   ├── annonsimport.html                ← STABILT FILNAMN (permanent länk, aldrig 404) — AI-annonsimport → HV-Databas; versioneras separat i källmappen "Nordicta annonsimport\", skrivs över vid ny version
+│   ├── version.json                     ← tilläggets auto-update-manifest (version + zip-filnamn); uppdateras från "Nordicta annonsimport\update\"
+│   ├── nordicta-annonsimport-chrome.zip ← Chrome/Edge-tillägget (från "Nordicta annonsimport\dist\")
+│   └── nordicta-annonsimport-firefox.zip ← Firefox-tillägget (från "Nordicta annonsimport\dist\")
 │
 ├── Riktprisdatabas/
 │   └── riktprisdatabas.html             ← STABILT FILNAMN (permanent länk, aldrig 404) — sökbar riktprisdatabas för AM; versioneras separat i källmappen "Nordicta riktprisdatabas\", skrivs över vid ny version

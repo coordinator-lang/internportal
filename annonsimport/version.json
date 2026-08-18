@@ -1,0 +1,6 @@
+{
+  "version": "0.2.2",
+  "chrome": "nordicta-annonsimport-chrome.zip",
+  "firefox": "nordicta-annonsimport-firefox.zip",
+  "notes": "Fixar dubbletter i fotolistan, omordning av bilder och ordning vid import."
+}

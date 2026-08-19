@@ -96,6 +96,11 @@
   .copy-btn svg { width:15px; height:15px; flex-shrink:0; }
   .copy-all { margin-top:4px; background:#f97316; }
   .copy-all:hover { background:#1a1a2e; }
+  .ext-dl { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
+  .dl-btn { display:inline-flex; align-items:center; gap:9px; padding:12px 18px; background:#1a1a2e; color:#fff; border-radius:9px; text-decoration:none; font-size:14px; font-weight:600; transition:background .15s; }
+  .dl-btn:hover { background:#f97316; text-decoration:none; }
+  .dl-btn svg { width:17px; height:17px; flex-shrink:0; }
+  .dl-btn .dl-sub { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:400; opacity:.7; }
 </style>
 </head>
 <body>
@@ -161,6 +166,20 @@ Box 1113
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
     <span>Kopiera alla uppgifter (adress + fakturamejl)</span>
   </button>
+
+  <!-- ANNONSIMPORT-TILLÄGG -->
+  <h2 class="section-title" id="annonsimport-tillagg">Annonsimport-tillägget</h2>
+  <p class="section-sub">Webbläsartillägget som hämtar bilder och uppgifter från en bostadsannons och importerar till HV-Databas. Ladda ner rätt version för din webbläsare, packa upp mappen och installera enligt instruktionerna. (Tillägget uppdaterar sig sedan självt.)</p>
+  <div class="ext-dl">
+    <a class="dl-btn" href="../annonsimport/nordicta-annonsimport-chrome.zip" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      Chrome / Edge <span class="dl-sub">.zip</span>
+    </a>
+    <a class="dl-btn" href="../annonsimport/nordicta-annonsimport-firefox.zip" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      Firefox <span class="dl-sub">.zip</span>
+    </a>
+  </div>
 
   <!-- MOMS / VAT -->
   <h2 class="section-title" id="vat">Moms vid uthyrning (VAT)</h2>

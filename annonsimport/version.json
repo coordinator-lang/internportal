@@ -1,6 +1,6 @@
 {
-  "version": "0.2.6",
+  "version": "0.2.7",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Airbnb: bilder fran andra annonser (Fler boenden i narheten) folier inte langre med."
+  "notes": "Airbnb: hamtar nu ENBART annonsens egen fotolista (samma som Visa alla foton)."
 }

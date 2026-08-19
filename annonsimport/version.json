@@ -1,6 +1,6 @@
 {
-  "version": "0.2.4",
+  "version": "0.2.5",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Mac-stod: uppdateraren finns nu aven som .command for macOS."
+  "notes": "Mac: uppdateraren tal nu att skriva over sig sjalv under uppdatering."
 }

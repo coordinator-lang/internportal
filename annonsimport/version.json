@@ -1,6 +1,6 @@
 {
-  "version": "0.2.2",
+  "version": "0.2.3",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Fixar dubbletter i fotolistan, omordning av bilder och ordning vid import."
+  "notes": "Hittar nu alla foton pa sajter med bildkarusell (t.ex. homeq.se) och filtrerar bort kartor och partnerloggor."
 }

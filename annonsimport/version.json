@@ -1,6 +1,6 @@
 {
-  "version": "0.2.5",
+  "version": "0.2.6",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Mac: uppdateraren tal nu att skriva over sig sjalv under uppdatering."
+  "notes": "Airbnb: bilder fran andra annonser (Fler boenden i narheten) folier inte langre med."
 }

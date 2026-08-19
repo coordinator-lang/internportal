@@ -1,6 +1,6 @@
 {
-  "version": "0.2.3",
+  "version": "0.2.4",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Hittar nu alla foton pa sajter med bildkarusell (t.ex. homeq.se) och filtrerar bort kartor och partnerloggor."
+  "notes": "Mac-stod: uppdateraren finns nu aven som .command for macOS."
 }

@@ -222,8 +222,8 @@
   .out b{font-variant-numeric:tabular-nums;color:var(--ink-strong)}
   .big{background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin:12px 0 6px;
        display:flex;justify-content:space-between;align-items:baseline}
-  .big span{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
-  .big b{font-size:23px;color:var(--accent,#3b82f6);font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .big span{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;min-width:0}
+  .big b{font-size:23px;color:var(--accent,#3b82f6);font-variant-numeric:tabular-nums;letter-spacing:-.5px;white-space:nowrap;flex-shrink:0}
   .big.result{background:var(--navy);border-color:var(--navy)}
   .big.result span{color:#94a3b8}
   .big.result b{color:#fff}
@@ -330,10 +330,10 @@
     .occ-row{ gap:8px; }
     .occ-list{ gap:3px; }
     .big{ padding:9px 13px; margin:9px 0 5px; }
-    .hint{ margin:3px 0 6px; font-size:10.5px; }
-    .rec-item{ padding:6px 0; }
-    .tbt th, .tbt td{ padding:5px 6px; }
-    .verdict{ padding:9px 11px; }
+    .hint{ margin:2px 0 5px; font-size:10.5px; }
+    .rec-item{ padding:4px 0; }
+    .tbt th, .tbt td{ padding:4px 6px; }
+    .verdict{ padding:8px 10px; }
     .legend{ display:none; }   /* skärm-färgnyckel, irrelevant i PDF (inga blå fält där) */
     .footer{ border-top:1px solid #cbd5e1; margin-top:10px; padding:10px 16px; }
     .main .card, .main .grid{ margin-top:11px !important; }
@@ -476,7 +476,9 @@
         <div class="row"><label>Övrigt + parkering</label><input type="number" id="other" step="50"></div>
         <div class="big"><span>Total kostnad / månad</span><b id="totCost">–</b></div>
         <div class="out"><span>Kostnad / person / månad</span><b id="ppMonth">–</b></div>
-        <div class="out"><span>Kostnad / person / dygn <span class="pill tip" data-tip="Golvpris – lägsta nivå per person och natt. Tar ni betalt mindre än så går uthyrningen med förlust. Priserna i kort 06/07 ska ligga ovanför.">golv</span></span><b id="ppDay">–</b></div>
+        <div class="out"><span>Kostnad / person / dygn <span class="sub">vid 100 % beläggning</span></span><b id="ppDay">–</b></div>
+        <div class="out"><span>Snittbeläggning <span class="sub">från kort 03</span></span><b id="avgOccOut">–</b></div>
+        <div class="big"><span>Effektivt golv / person / natt <span class="tip" data-tip="Kostnad/dygn delat på beläggningen. Tomma nätter bärs av de sålda, så vid t.ex. 80 % beläggning måste priset per såld natt ligga över detta för att gå plus.">vid beläggning</span></span><b id="ppDayAdj">–</b></div>
       </div>
     </div>
   </div>
@@ -503,8 +505,9 @@
       <div class="card-head"><span class="card-num">06</span><span class="card-title">Prisbaserad kalkyl</span><span class="tag">du sätter priset</span></div>
       <div class="body">
         <div class="row"><label>Hyra / person / natt</label><input type="number" id="priceNight" step="5"></div>
-        <p class="hint">Marginalen räknas fram: <span class="nb">pris mot kostnad/dygn</span>.</p>
-        <div class="big"><span>Resulterande TB-marginal</span><b id="b_margin">–</b></div>
+        <p class="hint">Marginalen räknas fram mot <span class="nb">effektivt golv</span> — dvs justerat för beläggningen (tomma nätter bärs av de sålda).</p>
+        <div class="big"><span>Resulterande marginal <span class="sub" id="b_occLbl">vid vald beläggning</span></span><b id="b_margin">–</b></div>
+        <div class="out"><span>Marginal vid 100 % beläggning <span class="sub">referens</span></span><b id="b_margin100">–</b></div>
         <div class="out"><span>Pris totalt / natt (alla)</span><b id="b_nightTot">–</b></div>
         <div class="out"><span>Pris / person / månad</span><b id="b_ppMonth">–</b></div>
         <div class="out"><span>Intäkt totalt / månad</span><b id="b_month">–</b></div>
@@ -521,8 +524,9 @@
       <div class="card-head"><span class="card-num">07</span><span class="card-title">%-baserad kalkyl</span><span class="tag">du sätter marginal</span></div>
       <div class="body">
         <div class="row"><label class="nowrap">Önskad marginal (TB)</label><span class="unit"><input type="number" id="tbTarget" step="1"> %</span></div>
-        <p class="hint">Priset räknas fram: <span class="nb">kostnad/dygn × (1 + %)</span>.</p>
-        <div class="big"><span>Pris / person / natt</span><b id="a_night">–</b></div>
+        <p class="hint">Priset räknas fram: <span class="nb">effektivt golv × (1 + %)</span> — dvs kostnad/dygn ÷ beläggning, så marginalen håller trots tomma nätter.</p>
+        <div class="big"><span>Pris / person / natt <span class="sub" id="a_occLbl">vid vald beläggning</span></span><b id="a_night">–</b></div>
+        <div class="out"><span>Pris / natt vid 100 % beläggning <span class="sub">referens</span></span><b id="a_night100">–</b></div>
         <div class="out"><span>Pris totalt / natt (alla)</span><b id="a_nightTot">–</b></div>
         <div class="out"><span>Pris / person / månad</span><b id="a_ppMonth">–</b></div>
         <div class="out"><span>Intäkt totalt / månad</span><b id="a_month">–</b></div>
@@ -805,20 +809,34 @@ function calc(){
   }
 
   const ppMonth = canPP ? totCost/tenants : NaN;
-  const ppDay   = canPP ? ppMonth/DPM     : NaN;
+  const ppDay   = canPP ? ppMonth/DPM     : NaN;   // golv vid 100 % beläggning
   $('ppMonth').textContent = canPP ? kr(ppMonth) : '–';
   $('ppDay').textContent   = canPP ? kr(ppDay)   : '–';
 
-  // 07 — %-baserat (sätt marginal -> pris)
+  // beläggningsjustering: tomma nätter bärs av de sålda → effektivt golv = golv ÷ snittbeläggning
+  const calDaysFull = ml.reduce((s,m)=>s+m.days,0);
+  const avgOcc = calDaysFull>0 ? days/calDaysFull : NaN;
+  const ppDayAdj = (canPP && avgOcc>0) ? ppDay/avgOcc : NaN;   // effektivt golv per SÅLD natt
+  const occLbl = isFinite(avgOcc) ? `vid ${pct(avgOcc)} beläggning` : 'vid vald beläggning';
+  $('avgOccOut').textContent = isFinite(avgOcc) ? pct(avgOcc) : '–';
+  $('ppDayAdj').textContent  = isFinite(ppDayAdj) ? kr(ppDayAdj) : '–';
+
+  // 07 — %-baserat (sätt marginal -> pris), beläggningsjusterat
   const tb = num('tbTarget')/100;
-  const aNight = canPP ? ppDay*(1+tb) : NaN;
+  const aNight    = (canPP && isFinite(ppDayAdj)) ? ppDayAdj*(1+tb) : NaN;  // pris att debitera vid vald beläggning
+  const aNight100 = canPP ? ppDay*(1+tb) : NaN;                             // referens vid 100 %
+  $('a_night100').textContent = canPP ? kr(aNight100) : '–';
+  $('a_occLbl').textContent = occLbl;
   setOut('a', aNight, tenants, days, months, daysLock, monthsLock, totCost, canPP, fixed, deprMonths);
 
-  // 06 — Pris-baserat (sätt pris -> marginal)
+  // 06 — Pris-baserat (sätt pris -> marginal), beläggningsjusterat
   const bNight = num('priceNight');
-  const bMargin = (canPP && ppDay>0) ? (bNight/ppDay)-1 : NaN;
+  const bMargin    = (canPP && ppDayAdj>0) ? (bNight/ppDayAdj)-1 : NaN;   // verklig marginal vid vald beläggning
+  const bMargin100 = (canPP && ppDay>0)    ? (bNight/ppDay)-1    : NaN;   // referens vid 100 %
   $('b_margin').textContent = isFinite(bMargin) ? pct(bMargin) : '–';
   $('b_margin').className = !isFinite(bMargin) ? 'marg-na' : (bMargin>=tb ? 'marg-good' : 'marg-low');
+  $('b_margin100').textContent = isFinite(bMargin100) ? pct(bMargin100) : '–';
+  $('b_occLbl').textContent = occLbl;
   setOut('b', canPP ? bNight : NaN, tenants, days, months, daysLock, monthsLock, totCost, canPP, fixed, deprMonths);
 
   // 05 — Marginal över tid (efter avskrivna möbler)
@@ -916,8 +934,6 @@ function calc(){
   const vEl=$('rec_verdict');
   const lockTxt = hasLock ? `den garanterade perioden (${lockN} mån)` : 'hela perioden';
   // --- flaskhalsdiagnos: peka ut främsta hindret + riktad åtgärd ---
-  const calDaysFull = ml.reduce((s,m)=>s+m.days,0);
-  const avgOcc = calDaysFull>0 ? days/calDaysFull : NaN;
   const tips=[];
   if(marketSEK>0 && isFinite(aNight) && aNight>marketSEK)
     tips.push(`kundpriset för ${Math.round(tb*100)} % marginal (${kr(aNight)}/natt) ligger <b>över marknadshyran</b> (${kr(marketSEK)}) — sänk målmarginalen eller kostnaderna`);

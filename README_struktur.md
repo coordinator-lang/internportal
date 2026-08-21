@@ -25,7 +25,8 @@ Nordicta Internal Website/
 │   ├── Städföretag_v5.5.html   ← + telefon på Aurora Städ; telefon visas före note-märket (liten ändring)
 │   ├── Städföretag_v5.6.html   ← + Masouds Städservice AB (Oskarshamn) (liten ändring)
 │   ├── Städföretag_v5.7.html   ← + Lilla Edet (ny kommun) + Irma Städservice (liten ändring)
-│   └── Städföretag_v5.8.html   ← + e-postadresser (mailto-pill) för 32 företag (liten ändring)  ← AKTUELL
+│   ├── Städföretag_v5.8.html   ← + e-postadresser (mailto-pill) för 32 företag (liten ändring)
+│   └── Städföretag_v5.9.html   ← tabellen använder fönsterbredden (max-width 1400→1800px + mindre padding), ingen beskärning på breda skärmar  ← AKTUELL
 │
 ├── Nordicta_Protocol/
 │   ├── Nordicta_Protocol_i_web_form_v4.html     ← original
@@ -132,6 +133,7 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v5.6 | Lade till Masouds Städservice AB (Oskarshamn, 0491-33 330, masoudsstäd.se) | Liten |
 | v5.7 | Ny kommun-kolumn Lilla Edet + Irma Städservice i Lilla Edet AB (073-627 05 82, irmastadservice.com) | Liten |
 | v5.8 | E-postadresser (blå mailto-pill i namncellen) för 32 av 37 företag via `EMAILS`-uppslag; saknas för Aurora/Staddags (undantagna) + Masouds/Spotless/Super Städ Norrbotten (ej verifierade) | Liten |
+| v5.9 | Responsiv tabellbredd: innehållssektionernas max-width 1400→1800px + table-wrap padding 2rem→1rem, så hela tabellen (~1389px) får plats på breda fönster istället för att beskäras med tomma sidmarginaler | Liten |
 
 ### Versionshistorik – Nordicta_Protocol
 | Version | Ändring | Typ |

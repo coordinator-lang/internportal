@@ -26,7 +26,8 @@ Nordicta Internal Website/
 │   ├── Städföretag_v5.6.html   ← + Masouds Städservice AB (Oskarshamn) (liten ändring)
 │   ├── Städföretag_v5.7.html   ← + Lilla Edet (ny kommun) + Irma Städservice (liten ändring)
 │   ├── Städföretag_v5.8.html   ← + e-postadresser (mailto-pill) för 32 företag (liten ändring)
-│   └── Städföretag_v5.9.html   ← tabellen använder fönsterbredden (max-width 1400→1800px + mindre padding), ingen beskärning på breda skärmar  ← AKTUELL
+│   ├── Städföretag_v5.9.html   ← tabellen använder fönsterbredden (max-width 1400→1800px + mindre padding), ingen beskärning på breda skärmar
+│   └── Städföretag_v6.html     ← REGISTER & ARBETSVERKTYG (stor ändring): +27 leverantörer (64 st), 72 kommuner i regiongrupper, leverantörskort med status/pris/tider/tillägg/rotation/tvätt/access/rapportering, uppdragshistorik med betyg, jämförelsevy, kommun- och företagssök. Ifyllda uppgifter sparas i Supabase (tabell stad_leverantorer) med localStorage som reserv  ← AKTUELL
 │
 ├── Nordicta_Protocol/
 │   ├── Nordicta_Protocol_i_web_form_v4.html     ← original

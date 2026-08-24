@@ -185,6 +185,7 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v1.2 | + Moms-sektion: Forenom-tabell (boende/tjänste-moms per land) + allmän tabell över moms på bostadsuthyrning för 12 länder (verifierat via webbsök juni 2026). Övriga fält fortf. platshållare. | Liten |
 | v1.3 | + Sektion "Nordictas faktureringsuppgifter" högst upp (fakturaadress + fakturamejl inbox.lev.1324422@arkivplats.se) med kopiera-knappar (clipboard API + execCommand-fallback). | Liten |
 | v1.4 | + tredje knapp "Kopiera alla uppgifter" (adress + fakturamejl i ett). **Sidan flyttad till STABILT filnamn `anvandbar-information.html`** (inga versionsnummer i URL → aldrig 404 vid uppdatering). Gamla versionerade filer borttagna; git-historien = arkiv. Rutin: skriv över `anvandbar-information.html`, bumpa bara denna tabell. | Liten |
+| v1.5 | + HV-guide "Hitta Airbnb-hyresvärdar direkt" — knapp som öppnar en modal-ruta med hela guiden (8 avsnitt, från Samir-mejlet), så sidan hålls ren. OBS: sidan är nu **datalåst** — klartext redigeras i `_src/Anvandbar_information/anvandbar-information.html` (gitignorerad) och krypteras via `node build-lock.js`. | Liten |
 
 ### Bostadskalkylator
 Hostad från användarens egen versionerade fil (senast **v3.4**). Versionshanteras

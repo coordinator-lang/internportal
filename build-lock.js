@@ -102,9 +102,19 @@ function loader(payload, depth, title) {
       {name:'PBKDF2', salt:a2b(P.salt), iterations:P.it, hash:'SHA-256'},
       km, {name:'AES-GCM', length:256}, true, ['decrypt']);
   }
+  // document.open() rensar bara dokumentet om sidan HAR laddat klart. Körs den
+  // medan sidan fortfarande tolkas (vilket den automatiska upplåsningen gör)
+  // infogas innehållet i stället, och låsrutan blir kvar ovanpå.
+  function readyToWrite(){
+    return new Promise(function(r){
+      if (document.readyState !== 'loading') return r();
+      document.addEventListener('DOMContentLoaded', function(){ r(); });
+    });
+  }
   async function open(key){
     var buf = await crypto.subtle.decrypt({name:'AES-GCM', iv:a2b(P.iv)}, key, a2b(P.ct));
     var html = new TextDecoder().decode(buf);
+    await readyToWrite();
     document.open(); document.write(html); document.close();
   }
   async function remember(key){
@@ -143,9 +153,17 @@ function loader(payload, depth, title) {
 `;
 }
 
+// Saltet måste vara SAMMA för alla sidor, annars blir den härledda nyckeln
+// olika per sida och den sparade upplåsningen fungerar bara på en sida i taget.
+// Det härleds ur lösenordet så att det också överlever ombyggen — annars hade
+// alla tvingats logga in på nytt vid varje deploy.
+function saltFor(password) {
+  return crypto.createHmac('sha256', password).update('nordicta-portal-salt-v1').digest().subarray(0, 16);
+}
+
 function encrypt(html, password) {
-  const salt = crypto.randomBytes(16);
-  const iv   = crypto.randomBytes(12);
+  const salt = saltFor(password);
+  const iv   = crypto.randomBytes(12);   // unik per sida, som AES-GCM kräver
   const key  = crypto.pbkdf2Sync(password, salt, ITER, 32, 'sha256');
   const c    = crypto.createCipheriv('aes-256-gcm', key, iv);
   const ct   = Buffer.concat([c.update(html, 'utf8'), c.final(), c.getAuthTag()]);

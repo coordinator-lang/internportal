@@ -6,4 +6,5 @@ HANDOVER*.md
 
 # Klartextkällor till de krypterade sidorna — ska ALDRIG publiceras
 _src/
-_locktest.html
+_locktest*.html
+_crosstest.js

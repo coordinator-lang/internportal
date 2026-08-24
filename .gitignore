@@ -3,3 +3,7 @@
 
 # Interna handover-/arbetsdokument — ska INTE publiceras på GitHub Pages
 HANDOVER*.md
+
+# Klartextkällor till de krypterade sidorna — ska ALDRIG publiceras
+_src/
+_locktest.html

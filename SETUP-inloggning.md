@@ -14,13 +14,20 @@ i varje sida som pratar med Supabase och behöver inga andra ändringar i sidan.
 
 Allt sker på https://supabase.com/dashboard/project/ruznxfmqarwlkyntxliq
 
-### A1. Lägg koden i inloggningsmejlet (obligatoriskt)
+### A1. Lägg koden i BÅDA mejlmallarna (obligatoriskt)
 
-Standardmallen skickar bara en klickbar länk. Vi använder en **sexsiffrig kod**,
-så mallen måste innehålla `{{ .Token }}`.
+Supabase väljer mall efter situation:
 
-1. **Authentication** → **Emails** (Email Templates) → fliken **Magic Link**
-2. Ersätt innehållet med:
+| Situation | Mall som skickas |
+|---|---|
+| Adressen har aldrig loggat in förut | **Confirm signup** |
+| Adressen har loggat in tidigare | **Magic Link** |
+
+Därför måste **båda** innehålla `{{ .Token }}`, annars kommer bara en klickbar
+länk och koden syns aldrig.
+
+**Authentication** → **Emails** → redigera fliken **Confirm signup** och sedan
+fliken **Magic Link**. Klistra in samma innehåll i båda:
 
 ```html
 <h2>Inloggning till Nordicta internportal</h2>
@@ -29,30 +36,41 @@ så mallen måste innehålla `{{ .Token }}`.
 <p>Koden gäller i 60 minuter. Har du inte begärt den kan du ignorera mejlet.</p>
 ```
 
-3. Spara.
+Spara varje flik för sig.
 
-### A2. Se till att mejlen faktiskt kommer fram (viktigast)
+### A2. Rätta Site URL (annars pekar länkarna på localhost:3000)
 
-Supabase inbyggda mejlutskick är kraftigt begränsat (några få mejl i timmen)
-och går i många projekt **bara till adresser som är medlemmar i Supabase-kontot**.
-Det räcker alltså inte för ett arbetslag. Sätt upp egen SMTP:
+**Authentication** → **URL Configuration**
 
-**Authentication** → **Emails** → **SMTP Settings** → slå på *Enable Custom SMTP*.
+- **Site URL:**
+  `https://coordinator-lang.github.io/internportal/Städföretag/Städföretag_v6.1.html`
+- **Redirect URLs** → *Add URL*:
+  `https://coordinator-lang.github.io/internportal/**`
 
-Två alternativ:
+Site URL flyttas till portalens startsida när inloggningen finns på alla sidor.
+Med rätt Site URL fungerar både engångskoden och länken i mejlet.
+
+### A3. Se till att mejlen når kollegorna (viktigast)
+
+Supabases inbyggda utskick (avsändare `noreply@mail.app.supabase.io`) är
+begränsat till några få mejl i timmen och går i många projekt **bara till
+adresser som är medlemmar i Supabase-kontot**. Det räcker för din egen test men
+inte för arbetslaget. Sätt upp egen SMTP:
+
+**Authentication** → **Emails** → **SMTP Settings** → *Enable Custom SMTP*.
 
 | | Fördel | Att tänka på |
 |---|---|---|
-| **Resend** (resend.com) | Gratis 3 000 mejl/mån, klart på 10 min | Ny leverantör att skapa konto hos, domänen bör verifieras |
-| **Microsoft 365** (smtp.office365.com:587) | Ni har det redan | SMTP AUTH är ofta avstängt i tenanten och måste slås på av admin; kräver ett konto med lösenord/applösenord |
+| **Resend** (resend.com) | Gratis 3 000 mejl/mån, klart på 10 min | Nytt konto, domänen bör verifieras |
+| **Microsoft 365** (smtp.office365.com:587) | Ni har det redan | SMTP AUTH är ofta avstängt i tenanten och måste slås på av admin |
 
 Avsändaradress: t.ex. `no-reply@nordicta.com`.
 
-### A3. Testa
+### A4. Testa
 
-Öppna Städföretag-sidan, skriv din jobbadress, klicka **Skicka engångskod**.
-Kommer koden fram och du kommer in — då är steg 1 klart att rullas ut på
-resten av sidorna.
+Öppna Städföretag-sidan, skriv din jobbadress, klicka **Skicka engångskod**,
+skriv in de sex siffrorna. Kommer du in är steg 1 klart att rullas ut på resten
+av sidorna.
 
 ---
 
@@ -72,9 +90,7 @@ adminrättigheter i Entra ID.
 4. I Supabase: **Authentication** → **Sign In / Providers** → **Azure** → slå på,
    klistra in Client ID, Secret och `https://login.microsoftonline.com/<TENANT-ID>`
    som Azure Tenant URL.
-5. **Authentication** → **URL Configuration** → lägg portalens adresser under
-   *Redirect URLs*, t.ex. `https://coordinator-lang.github.io/internportal/**`
-6. Säg till mig — jag sätter `AZURE_ENABLED = true` i `portal-auth.js` så
+5. Säg till mig — jag sätter `AZURE_ENABLED = true` i `portal-auth.js` så
    knappen dyker upp.
 
 ---
@@ -132,3 +148,5 @@ använder service-nyckeln och påverkas inte.
 - **Utloggning:** knappen nere till höger på sidorna.
 - **Reservväg:** `Städföretag/Städföretag_v6.html` (utan inloggning) ligger kvar
   och nås direkt via adressen om något krånglar under övergången.
+- **Delad fil:** `portal-auth.js` versionsstämplas inte i filnamnet — den ligger
+  på ett fast namn eftersom alla sidor pekar på den. Historiken finns i git.

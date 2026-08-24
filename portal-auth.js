@@ -250,14 +250,23 @@
     busy = true;
     const btn = card().querySelector('#np-verify');
     btn.disabled = true; btn.textContent = 'Loggar in…';
-    try {
-      const tok = await api('/auth/v1/verify', {email: email, token: code, type: 'email'});
-      saveSession(tok);
-      onSignedIn();
-    } catch (e) {
-      msg('Koden stämmer inte eller har gått ut. Försök igen.', 'err');
-      btn.disabled = false; btn.textContent = 'Logga in';
-    } finally { busy = false; }
+    // Första inloggningen för ett nytt konto är en "signup", senare gånger
+    // "magiclink"/"email". Vi provar typerna i tur och ordning så att koden
+    // fungerar oavsett vilken mall Supabase skickade.
+    let lastErr = null;
+    for (const type of ['email', 'signup', 'magiclink']) {
+      try {
+        const tok = await api('/auth/v1/verify', {email: email, token: code, type: type});
+        saveSession(tok);
+        onSignedIn();
+        busy = false;
+        return;
+      } catch (e) { lastErr = e; }
+    }
+    busy = false;
+    msg('Koden stämmer inte eller har gått ut. Försök igen.' +
+        (lastErr ? '<br><span style="opacity:.7">(' + lastErr.message + ')</span>' : ''), 'err');
+    btn.disabled = false; btn.textContent = 'Logga in';
   }
 
   function userPill() {
@@ -277,6 +286,13 @@
 
   /* ── Start ───────────────────────────────────────────────────────────── */
   // Tokens efter Microsoft-inloggning kommer tillbaka i adressens #-del.
+  const urlCode = new URLSearchParams(location.search).get('code');
+  if (urlCode) {
+    // Länkinloggning (PKCE-flöde) — byt koden mot en session.
+    api('/auth/v1/token?grant_type=pkce', {auth_code: urlCode})
+      .then(tok => { saveSession(tok); history.replaceState(null,'',location.pathname); location.reload(); })
+      .catch(() => {});
+  }
   if (location.hash.indexOf('access_token=') > -1) {
     const p = new URLSearchParams(location.hash.slice(1));
     saveSession({

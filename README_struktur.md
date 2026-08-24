@@ -1,5 +1,21 @@
 # Nordicta Internal Website — struktur & versionering
 
+## Länkkonvention (från 2026-08-24): FASTA filnamn
+
+Varje undersida nås på ett filnamn UTAN versionsnummer, t.ex.
+`Städföretag/stadforetag.html`. Länken ändras aldrig, så bokmärken och
+delade länkar slutar aldrig fungera.
+
+**Rutin vid ny version:** bygg som vanligt lokalt med versionsnummer i
+källmappen, men skriv över den STABILA filen i repot vid deploy. Git-historiken
+är arkivet — inga nya versionsfiler behöver läggas till här, och index.html
+behöver inte längre uppdateras vid varje version.
+
+De versionsfiler som tidigare låg i index.html är nu omdirigeringar till den
+stabila filen, så gamla bokmärken landar rätt. Äldre versionsfiler ligger kvar
+som arkiv.
+
+
 ## Mappstruktur
 
 ```

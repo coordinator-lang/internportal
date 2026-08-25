@@ -1,6 +1,6 @@
 {
-  "version": "0.2.7",
+  "version": "0.2.8",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Airbnb: hamtar nu ENBART annonsens egen fotolista (samma som Visa alla foton)."
+  "notes": "Hittar bilder pa sajter som anvander bildproxy (kotimaailma m.fl.) + varnar nar galleriet behover oppnas."
 }

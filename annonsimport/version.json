@@ -1,6 +1,6 @@
 {
-  "version": "0.2.8",
+  "version": "0.2.9",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Hittar bilder pa sajter som anvander bildproxy (kotimaailma m.fl.) + varnar nar galleriet behover oppnas."
+  "notes": "Ordna om annonsens bilder genom att dra dem i rutnatet (pilarna finns kvar)."
 }

@@ -1,6 +1,6 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.2",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Tomt formular via hogerklick pa ikonen + bildavlasningen laser aven dina egna uppladdade bilder."
+  "notes": "Tomt formular (hogerklick pa ikonen) med lankfalt + AI:n laser inklistrad text och dina egna uppladdade bilder."
 }

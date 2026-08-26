@@ -1,6 +1,6 @@
 {
-  "version": "0.2.9",
+  "version": "0.3.0",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Ordna om annonsens bilder genom att dra dem i rutnatet (pilarna finns kvar)."
+  "notes": "Tomt formular via hogerklick pa ikonen + bildavlasningen laser aven dina egna uppladdade bilder."
 }

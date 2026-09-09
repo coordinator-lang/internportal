@@ -90,7 +90,7 @@ Nordicta Internal Website/
 │   └── inflytt-utflytt-guide_v3.9.html  ← workflow-guide för in-/utflytt, hostad oförändrad (har egen "← Internportal"-länk; versionshanteras separat)
 │
 └── SOP/
-    └── sop.html                         ← STABILT FILNAMN, DATALÅST (byggs från _src/SOP/sop.html). Sökbar SOP 2026, portal-stil, emoji-fri. v1.3 = 6 delar + FLÖDEN (DEL 6 = Facebook-sourcing av hyresvärdar/objekt, 12 steg + DM-mall). Gamla sop_v1.x/sop-alt = kvarvarande arkiv, ej länkade.
+    └── sop.html                         ← STABILT FILNAMN, DATALÅST (byggs från _src/SOP/sop.html). Sökbar SOP 2026, portal-stil, emoji-fri. v1.4 = 7 delar + FLÖDEN (DEL 6 = Facebook-sourcing; DEL 7 = Visningar kund/HV). Gamla sop_v1.x/sop-alt = kvarvarande arkiv, ej länkade.
 ```
 
 > **OBS – Hyresvardsformular/ är MEDVETET INTE länkad** från index eller någon

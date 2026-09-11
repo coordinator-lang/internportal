@@ -183,6 +183,7 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v1.3 | + Sektion "Nordictas faktureringsuppgifter" högst upp (fakturaadress + fakturamejl inbox.lev.1324422@arkivplats.se) med kopiera-knappar (clipboard API + execCommand-fallback). | Liten |
 | v1.4 | + tredje knapp "Kopiera alla uppgifter" (adress + fakturamejl i ett). **Sidan flyttad till STABILT filnamn `anvandbar-information.html`** (inga versionsnummer i URL → aldrig 404 vid uppdatering). Gamla versionerade filer borttagna; git-historien = arkiv. Rutin: skriv över `anvandbar-information.html`, bumpa bara denna tabell. | Liten |
 | v1.5 | + HV-guide "Hitta Airbnb-hyresvärdar direkt" — knapp som öppnar en modal-ruta med hela guiden (8 avsnitt, från Samir-mejlet), så sidan hålls ren. OBS: sidan är nu **datalåst** — klartext redigeras i `_src/Anvandbar_information/anvandbar-information.html` (gitignorerad) och krypteras via `node build-lock.js`. | Liten |
+| v1.6 | + "Moms på städning i Finland" i moms-avsnittet (13,5 % när städningen ingår i inkvarteringstjänsten, t.ex. slutstädning — gäller enligt Vero även vid separat fakturarad; 25,5 % som fristående städtjänst) + motsvarande rad i Finland-landkortet | Liten |
 
 ### Bostadskalkylator
 Hostad från användarens egen versionerade fil (senast **v3.4**). Versionshanteras

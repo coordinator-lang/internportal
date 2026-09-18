@@ -15,6 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const {expand} = require('./build-include.js');
 
 const KEYFILE = path.join(process.env.USERPROFILE || process.env.HOME, '.nordicta-portal-key');
 const SRC = '_src';
@@ -216,7 +217,7 @@ let n = 0, bytes = 0;
 PAGES.forEach(p => {
   const src = path.join(SRC, p);
   if (!fs.existsSync(src)) { console.log('hoppar över (saknas i _src):', p); return; }
-  const html = fs.readFileSync(src, 'utf8');
+  const html = expand(fs.readFileSync(src, 'utf8'), SRC);   // @include-rader bakas in
   const depth = p.includes('/') ? 1 : 0;
   const out = loader(encrypt(html, password), depth, titleOf(html, 'Nordicta internportal'));
   fs.writeFileSync(p, out);

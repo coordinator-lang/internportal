@@ -117,6 +117,32 @@ inte i en undermapp; då slutar den fungera som naturlig ingång.)
 så den pekar på den nya filen (t.ex. `jourschema_v2.1.html` → `jourschema_v2.2.html`).
 Det är en enda rad per sida.
 
+## Delad kod mellan sidor (@include)
+
+Två sidor använder samma leverantörsdata: **Städföretag** (registret — där
+uppgifterna underhålls) och **Städkalkylator** (säljverktyget — som läser dem).
+För att det bara ska finnas EN uppsättning leverantörer, kommuntäckningar och
+priser ligger allt sådant i en delad källfil:
+
+    _src/_shared/leverantorer.core.js
+
+Sidorna hämtar in den med en rad i klartexten, utanför sina egna `<script>`:
+
+    <!-- @include _shared/leverantorer.core.js -->
+
+`build-lock.js` byter raden mot filens innehåll (inbakat i en `<script>`-tagg)
+**innan** sidan krypteras — `build-include.js` sköter expanderingen och
+`_verify.js` jämför mot samma expanderade källa. Filen får alltså ALDRIG läggas
+som en separat `.js` i repot: den skulle ligga okrypterad på GitHub Pages och
+läcka precis det som låset ska skydda.
+
+Kärnan exporterar allt genom globalen `LEV`. Registret plockar in namnen i sitt
+eget scope (`const {…} = LEV;`), kalkylatorn anropar `LEV.*` direkt eftersom den
+har egna `num()`/`kr()` som betyder något annat.
+
+**Regel:** leverantörspriser, kommuntäckning, status och prismotor ändras bara i
+kärnan. Lägg aldrig en kopia i en enskild sida.
+
 ## Versioneringssystem
 
 - **Stor ändring** (ny funktion, ombyggnad av layout): höj huvudversionen
@@ -148,6 +174,12 @@ Behåll de gamla filerna i mappen som arkiv – då kan man alltid gå tillbaka.
 | v5.6 | Lade till Masouds Städservice AB (Oskarshamn, 0491-33 330, masoudsstäd.se) | Liten |
 | v5.7 | Ny kommun-kolumn Lilla Edet + Irma Städservice i Lilla Edet AB (073-627 05 82, irmastadservice.com) | Liten |
 | v5.8 | E-postadresser (blå mailto-pill i namncellen) för 32 av 37 företag via `EMAILS`-uppslag; saknas för Aurora/Staddags (undantagna) + Masouds/Spotless/Super Städ Norrbotten (ej verifierade) | Liten |
+| v6 | Leverantörsregister: leverantörskort med pris/villkor/uppdragshistorik + jämförelsevy, data i Supabase | Stor |
+| v7 | Statusmodell med koder, uppdragsmatchning, prismotor och marginal | Stor |
+| v7.1 | AI-tolkning av leverantörssvar (Edge Function parse-cleaning-quote) | Liten |
+| v7.2 | Visar när AI-svarsschemat avvisades | Liten |
+| v7.3 | Saba Städtjänst AB: komplett prisunderlag, officiellt namn + ID-alias | Liten |
+| v7.4 | Leverantörsdata och prismotor utbrutna till `_src/_shared/leverantorer.core.js` (delas med Städkalkylatorn); uppdragstabellen visar kalkyl vs faktisk faktura | Stor |
 | v5.9 | Responsiv tabellbredd: innehållssektionernas max-width 1400→1800px + table-wrap padding 2rem→1rem, så hela tabellen (~1389px) får plats på breda fönster istället för att beskäras med tomma sidmarginaler | Liten |
 
 ### Versionshistorik – Nordicta_Protocol
@@ -200,6 +232,18 @@ förblir stabilt och gamla bokmärken 404:ar aldrig.
 den nya versionerade filen → commit/push. Rör INTE filnamnet eller index-kortet.
 Versionsarkiv behövs inte i repot — git-historiken + användarens källmapp
 (`Nordicta bostadskalkylator\`) bevarar alla versioner.
+
+### Städkalkylator
+
+| Version | Ändring | Typ |
+|---|---|---|
+| v5 | Tidigare baseline (tidsmodell, tillägg, riskbedömning, förfrågan) | – |
+| v6 | Kopplad till leverantörsregistret: kort 03c matchar kommunen mot registret och visar leverantörskostnad, prisunderlag, kapacitet och datakvalitet; timpriset hämtas ur registret (egna KNOWN_TIMPRIS borttagna); påslag/kundpris/marginal mot vald leverantör; kort 08 skapar uppdrag på leverantören | Stor |
+
+**PERMANENT LÄNK:** `Stadkalkylator/stadkalkylator.html`. Källmappen
+`Documents\Nordicta slutstädkalkylator\` bevarar versionerna som fristående filer
+(byggda med kärnan inbakad), medan klartexten som byggs ligger i
+`_src/Stadkalkylator/stadkalkylator.html`.
 
 ### Versionshistorik – index (startsidan)
 Index versioneras genom arkiverade kopior i roten (`index_v1.0.html`, `index_v1.1.html` etc.).

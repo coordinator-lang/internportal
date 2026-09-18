@@ -1,6 +1,7 @@
 // Kontrollerar att varje krypterad sida går att dekryptera tillbaka till exakt
 // klartexten i _src/ — utan att skriva ut lösenordet.
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
+const {expand} = require('./build-include.js');
 const KEYFILE = path.join(process.env.USERPROFILE, '.nordicta-portal-key');
 const pw = fs.readFileSync(KEYFILE, 'utf8').trim();
 
@@ -29,7 +30,7 @@ PAGES.forEach(p => {
   try { klartext = Buffer.concat([d.update(buf.subarray(0, buf.length-16)), d.final()]).toString('utf8'); }
   catch (e) { console.log('FEL: gick inte att dekryptera', p); fel++; return; }
 
-  const original = fs.readFileSync(path.join('_src', p), 'utf8');
+  const original = expand(fs.readFileSync(path.join('_src', p), 'utf8'), '_src');
   const identisk = klartext === original;
   const lackage = HEMLIGT.filter(h => enc.includes(h));
   if (!identisk || lackage.length) {

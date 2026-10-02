@@ -1,6 +1,6 @@
 {
-  "version": "0.3.2",
+  "version": "0.5.1",
   "chrome": "nordicta-annonsimport-chrome.zip",
   "firefox": "nordicta-annonsimport-firefox.zip",
-  "notes": "Tomt formular (hogerklick pa ikonen) med lankfalt + AI:n laser inklistrad text och dina egna uppladdade bilder."
+  "notes": "WordPress-sajter med egen logga gav NOLL foton (klassen wp-custom-logo pa body raknades som sajtens logga). Rattat. Plus: egna filer via import-photo-url."
 }
